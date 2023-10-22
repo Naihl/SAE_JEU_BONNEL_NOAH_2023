@@ -46,4 +46,4 @@ la carte. Ils doivent posséder 3 peau et 2 griffes pour pouvoir gagner la parti
 Si il n'y a plus assez de creatures pour que les joueurs puissent gagner il suffit de tous
 les eliminer pour qu'ils reaparaissent.
 
-
+Merci et bon jeu !
