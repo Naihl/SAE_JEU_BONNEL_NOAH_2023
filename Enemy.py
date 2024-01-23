@@ -9,7 +9,7 @@ class Enemy(Entity):
         self.hp = 100
         self.damage = 10
         self.mouvement = 3
-     
+    
     # Méthode pour obtenir la position des enemies
     def obtenir_position(self):
         return self.rect.x // self.taille_case, self.rect.y // self.taille_case
