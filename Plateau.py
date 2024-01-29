@@ -135,7 +135,7 @@ class Plateau:
         return plateau_list
 
 
-     # Boucle Principale	
+    # Boucle Principale	
     def runner(self):
         running = True
         while running:

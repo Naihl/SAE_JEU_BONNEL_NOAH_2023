@@ -1,7 +1,8 @@
 import pygame
 import pygame_gui
 import subprocess
-
+import json
+from stats import *
 pygame.init()
 
 # Configuration de la fenêtre du menu
@@ -40,6 +41,15 @@ bouton_quitter = pygame_gui.elements.UIButton(
 )
 
 # Boucle principale du menu
+now = time_checker()
+#ecriture dans le json
+with open("data_partie.json", "rw") as f:
+    data = json.load(f)
+    
+    
+    
+    data["temps_deb"] = str(now)
+    
 running = True
 while running:
     for event in pygame.event.get():
