@@ -40,16 +40,19 @@ bouton_quitter = pygame_gui.elements.UIButton(
     manager=manager
 )
 
-# Boucle principale du menu
+
+
+# initialisation du temps de debut de partie
 now = time_checker()
 #ecriture dans le json
-with open("data_partie.json", "rw") as f:
+with open("data_partie.json", "r") as f:
     data = json.load(f)
-    
-    
-    
+with open("data_partie.json", "w") as f:
     data["temps_deb"] = str(now)
+    json.dump(data, f, indent=4)
     
+
+# Boucle principale du menu    
 running = True
 while running:
     for event in pygame.event.get():
@@ -60,6 +63,22 @@ while running:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 #bouton joueur qui lance le jeu
                 if event.ui_element == bouton_jouer:
+                    # initialisation du temps de debut de partie
+                    now = time_checker()
+                    #ecriture dans le json
+                    with open("data_partie.json", "r") as f:
+                        data = json.load(f)
+                        with open("data_partie.json", "w") as f:
+                            data["temps_deb"] = str(now)
+                            json.dump(data, f, indent=4)
+                            
+                    with open("data_global.json", "r") as f:
+                        data = json.load(f)
+                        with open("data_global.json", "w") as f:
+                            data["nb_partie_jouee"] =+ 1
+                            json.dump(data, f, indent=4)
+                    
+                    #lancement du jeu
                     pygame.quit()
                     subprocess.run(["python", "game.py"])
                     #bouton tutoriel qui lance l'affichage tutoriel
@@ -70,7 +89,7 @@ while running:
                 if event.ui_element == bouton_quitter:
                     running = False
                 
-                    
+
 
         manager.process_events(event)
 

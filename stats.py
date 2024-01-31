@@ -3,6 +3,7 @@ from datetime import datetime
 def time_checker():
     
     now = datetime.now()
+    now = now.strftime("%H:%M:%S")
     return now
 
 def time_diff(start, end):

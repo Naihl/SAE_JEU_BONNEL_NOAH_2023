@@ -1,4 +1,5 @@
 import pygame
+import json
 import sys
 import pygame_gui
 import pygame.font
@@ -12,6 +13,7 @@ from Bottes import Bottes
 from Coeur import Coeur
 from Loup import Loup
 from Maraudeur import Maraudeur
+from stats import *
 import subprocess
 
 # Fichier principal du jeu
@@ -265,7 +267,7 @@ current_time = pygame.time.get_ticks()
 last_update_time = current_time
 clock = pygame.time.Clock()
 
-   
+    
 updatetext = UpdateText(fenetre_main, joueur1, joueur2, joueur3, joueur4)
 
     
@@ -456,12 +458,12 @@ while running:
             running = False
             pygame.quit()
             subprocess.run(["python", "menu.py"])
-          
-          #permet de passer son tour et de redonner des mouvements pour le prochain tour
+        
+        #permet de passer son tour et de redonner des mouvements pour le prochain tour
         elif joueuractuel.mouvement == 0:
             joueuractuel.mouvement = 10
             joueuractuel = tour_joueur(joueuractuel)
-              
+        
         #permet d'utiliser les bottes
         elif touches[pygame.K_b]:
             joueuractuel.utiliser_botte()
@@ -469,9 +471,22 @@ while running:
             
         # definition de la case de sortie et de ses conditions
         elif plateau.get_case_content(joueur_x, joueur_y).biome_name == "temple" and joueuractuel.nombre_peau >= 3 and joueuractuel.nombre_griffes >= 2:
+            #on recupère l'heure de fin de partie
+            now = time_checker()
+            #ecriture dans le json
+            with open("data_partie.json", "r") as f:
+                data = json.load(f)
+                with open("data_partie.json", "w") as f:
+                    data["temps_fin"] = str(now)
+                    json.dump(data, f, indent=4)
+            
+            
+            
             running = False
             pygame.quit()
             subprocess.run(["python", "victoire.py"])
+            
+            
 
         #genere des chevres quand elles sont tous mortes
         elif all(chevre.rect.x == -100 for chevre in chevres):
