@@ -9,18 +9,30 @@ pygame.init()
 largeur_menu = 800
 hauteur_menu = 600
 fenetre_menu = pygame.display.set_mode((largeur_menu, hauteur_menu))
-pygame.display.set_caption("King of Sand")
+new_font = pygame.font.Font("./img/Dune_Rise.ttf", 50)
+background = pygame.image.load("./img/cover_desert1.jpeg")
+fenetre_menu.blit(background, (0, 0))
+import pygame_gui.elements.ui_button as pygame_gui_button
 
-manager = pygame_gui.UIManager((largeur_menu, hauteur_menu))
+pygame.display.set_caption("King of Sand")
+theme_data = {
+    "UILabel": {
+        "font_path": "./img/Dune_Rise.ttf",
+        "font_size": 50
+    }
+}
+manager = pygame_gui.UIManager((largeur_menu, hauteur_menu),"./img/font.json")
 
 # Création de l'interface du menu
+
+
 menu_label = pygame_gui.elements.UILabel(
     relative_rect=pygame.Rect((200, 100), (400, 100)),
     text="King of Sand",
     manager=manager
 )
 
-bouton_jouer = pygame_gui.elements.UIButton(
+bouton_jouer = pygame_gui_button.UIButton(
     relative_rect=pygame.Rect((300, 250), (200, 50)),
     text="Jouer",
     manager=manager
@@ -30,6 +42,12 @@ bouton_jouer = pygame_gui.elements.UIButton(
 bouton_tutoriel = pygame_gui.elements.UIButton(
     relative_rect=pygame.Rect((300, 350), (200, 50)),
     text="Tutoriel",
+    manager=manager
+)
+
+bouton_stats = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((300, 400), (200, 50)),
+    text="Stats",
     manager=manager
 )
 
@@ -94,7 +112,7 @@ while running:
         manager.process_events(event)
 
     manager.update(1 / 60)
-    fenetre_menu.fill((87, 80, 66))
+    #fenetre_menu.fill((87, 80, 66))
     manager.draw_ui(fenetre_menu)
     pygame.display.update()
 
