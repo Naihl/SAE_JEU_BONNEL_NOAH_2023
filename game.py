@@ -1,3 +1,14 @@
+"""
+Fichier principal du jeu "King of Sand".
+
+Ce fichier contient les définitions des fonctions principales du jeu ainsi que
+l'initialisation des variables et des objets nécessaires au fonctionnement du jeu.
+
+Auteur: Naihl
+Date de création: 2023
+
+"""
+
 import pygame
 import sys
 import pygame_gui
@@ -14,7 +25,6 @@ from Loup import Loup
 from Maraudeur import Maraudeur
 import subprocess
 
-# Fichier principal du jeu
 
 # Initialisation des variables du plateau
 largeur_plateau = 64
@@ -30,57 +40,67 @@ hauteur_main = hauteur_plateau * taille_case + 150
 fenetre_main = pygame.display.set_mode((largeur_main + plateau.largeur * plateau.taille_case - 200, hauteur_main ))
 pygame.display.set_caption("King of Sand")
 
-# fonction permettant de voir si le joueur est à coté d'un autre joueur
 def joueurs_adjacents(joueur1, joueur2):
+    """
+    Vérifie si deux joueurs sont adjacents sur le plateau.
+
+    Args:
+        joueur1 (Joueur): Le premier joueur.
+        joueur2 (Joueur): Le deuxième joueur.
+
+    Returns:
+        bool: True si les joueurs sont adjacents, False sinon.
+    """
     x1, y1 = joueur1.obtenir_position()
     x2, y2 = joueur2.obtenir_position()
     return abs(x1 - x2) + abs(y1 - y2) == 1
 
-# fonction permettant de deplacer les loups vers le joueur
+
+
 def deplacer_loups_vers_joueur(joueur, loups):
-    # Parcoure tous les loups
+    """
+    Déplace les loups vers un joueur donné.
+
+    Args:
+        joueur (Joueur): Le joueur vers lequel les loups doivent être déplacés.
+        loups (list): Liste des loups à déplacer.
+    """
+    # Parcours tous les loups
     for loup in loups:
-        # Ignore les loups déjà éliminés
         if loup.hp <= 0:
-            continue  
-        joueur_x, joueur_y = joueur.obtenir_position()
+            continue
+        joueur_plus_proche = None
+        distance_min = float('inf')
         loup_x, loup_y = loup.obtenir_position()
-        deplacement_x = 0
-        deplacement_y = 0
 
-        # Vérifie si le loup est sur une case
-        case_loup = plateau.get_case_content(loup_x, loup_y)
-        if case_loup is not None:
-            if joueur_x < loup_x:
-                if plateau.get_case_content(loup_x -1, loup_y).biome_name == "blue":
-                    break
-                else:
-                    deplacement_x = -1
-            elif joueur_x > loup_x:
-                if plateau.get_case_content(loup_x +1, loup_y).biome_name == "blue":
-                    break
-                else:
-                    deplacement_x = 1
+        for joueur in joueurs:
+            joueur_x, joueur_y = joueur.obtenir_position()
+            distance = abs(joueur_x - loup_x) + abs(joueur_y - loup_y)
+            if distance < distance_min:
+                distance_min = distance
+                joueur_plus_proche = joueur
 
-            if joueur_y < loup_y:
-                if plateau.get_case_content(loup_x, loup_y -1).biome_name == "blue":
-                    break
-                else:
-                    deplacement_y = -1
-            elif joueur_y > loup_y:
-                if plateau.get_case_content(loup_x, loup_y +1).biome_name == "blue":
-                    break
-                else:
-                    deplacement_y = 1
-
-        if abs(joueur_x - loup_x) + abs(joueur_y - loup_y) <= 1:
-            loup.attaquer(joueur)  # Le loup attaque le joueur s'il est à portée
-        else:
+        if joueur_plus_proche:
+            joueur_x, joueur_y = joueur_plus_proche.obtenir_position()
+            deplacement_x = 0 if joueur_x == loup_x else (joueur_x - loup_x) // abs(joueur_x - loup_x)
+            deplacement_y = 0 if joueur_y == loup_y else (joueur_y - loup_y) // abs(joueur_y - loup_y)
             loup.deplacer(deplacement_x, deplacement_y)
+            if abs(joueur_x - loup_x) + abs(joueur_y - loup_y) <= 1:
+                loup.attaquer(joueur_plus_proche)  # Le loup attaque le joueur s'il est à portée
+
+        
+        
             
 # fonction permettant de deplacer les maraudeurs vers le joueur
 def deplacer_maraudeurs_vers_joueur(joueur, maraudeurs):
-    # Parcoure tous les maraudeurs
+    """
+    Déplace les maraudeurs vers un joueur donné.
+
+    Args:
+        joueur (Joueur): Le joueur vers lequel les maraudeurs doivent être déplacés.
+        maraudeurs (list): Liste des maraudeurs à déplacer.
+    """
+    # Parcours tous les maraudeurs
     for maraudeur in maraudeurs:
         # Ignore les maraudeurs déjà éliminés
         if maraudeur.hp <= 0:
@@ -116,12 +136,20 @@ def deplacer_maraudeurs_vers_joueur(joueur, maraudeurs):
                     deplacement_y = 1
 
         if abs(joueur_x - maraudeur_x) + abs(joueur_y - maraudeur_y) <= 5:
-            maraudeur.attaquer(joueur)  # Le loup attaque le joueur s'il est à portée
+            maraudeur.attaquer(joueur)  # Le maraudeur attaque le joueur s'il est à portée
         else:
             maraudeur.deplacer(deplacement_x, deplacement_y)
 
-# fonction permettant de changer les tours des joueurs
 def tour_joueur(joueuractuel):
+    """
+    Change le tour des joueurs dans l'ordre prédéfini.
+
+    Args:
+        joueuractuel (Joueur): Le joueur dont c'est actuellement le tour.
+
+    Returns:
+        Joueur: Le joueur dont le tour est à venir.
+    """
     if joueuractuel == joueur1:
         deplacer_loups_vers_joueur(joueuractuel, loups)
         deplacer_maraudeurs_vers_joueur(joueuractuel, maraudeurs)
@@ -146,6 +174,18 @@ def tour_joueur(joueuractuel):
 
 # fonction permettant de generer une position aleatoirement
 def position_random(a,b,c,d):
+    """
+    Génère une position aléatoire dans les limites spécifiées.
+
+    Args:
+        a (int): Limite inférieure en x.
+        b (int): Limite supérieure en x.
+        c (int): Limite inférieure en y.
+        d (int): Limite supérieure en y.
+
+    Returns:
+        tuple: Un tuple contenant les coordonnées x et y générées aléatoirement.
+    """
     while True:
         x, y = random.randint(a, b), random.randint(c, d)
         #on verifie que la case n'est pas impossible d'acces
@@ -155,6 +195,15 @@ def position_random(a,b,c,d):
 
 # fonction permettant de generer les chèvres aleatoirement
 def generer_chevres(nombre_de_chevres):
+    """
+    Génère des chèvres de manière aléatoire sur le plateau.
+
+    Args:
+        nombre_de_chevres (int): Le nombre de chèvres à générer.
+
+    Returns:
+        list: Une liste contenant les objets chèvre générés.
+    """
     chevres = []
     for _ in range(nombre_de_chevres):
         x_chevre, y_chevre = position_random(0, 63, 0, 63  )
@@ -166,8 +215,16 @@ def generer_chevres(nombre_de_chevres):
 # Crée  10 chèvres 
 chevres = generer_chevres(10)
 
-# fonction permettant de generer les loups aleatoirement
 def generer_loups(nombre_de_loups):
+    """
+    Génère des loups de manière aléatoire sur le plateau.
+
+    Args:
+        nombre_de_loups (int): Le nombre de loups à générer.
+
+    Returns:
+        list: Une liste contenant les objets loup générés.
+    """
     loups = []
     for _ in range(nombre_de_loups):
         x_loup, y_loup = position_random(0, 63, 0, 63)
@@ -179,8 +236,16 @@ def generer_loups(nombre_de_loups):
 # Crée 10 loups
 loups = generer_loups(10)  
 
-# fonction permettant de generer les maraudeurs aleatoirement
 def generer_maraudeurs(nombre_de_maraudeurs):
+    """
+    Génère des maraudeurs de manière aléatoire sur le plateau.
+
+    Args:
+        nombre_de_maraudeurs (int): Le nombre de maraudeurs à générer.
+
+    Returns:
+        list: Une liste contenant les objets maraudeur générés.
+    """
     maraudeurs = []
     for _ in range(nombre_de_maraudeurs):
         x_maraudeur, y_maraudeur = position_random(28, 36, 28, 36)
@@ -192,8 +257,16 @@ def generer_maraudeurs(nombre_de_maraudeurs):
 # Crée 3 maraudeurs
 maraudeurs = generer_maraudeurs(3)  
 
-# fonction permettant de generer les coeurs aleatoirement
 def generer_coeurs(nombre_de_coeurs):
+    """
+    Génère des coeurs de manière aléatoire sur le plateau.
+
+    Args:
+        nombre_de_coeurs (int): Le nombre de coeurs à générer.
+
+    Returns:
+        list: Une liste contenant les objets coeur générés.
+    """
     coeurs = []
 
     nombre_de_coeurs = 10  
@@ -207,8 +280,16 @@ def generer_coeurs(nombre_de_coeurs):
 # Crée 20 coeurs
 coeurs = generer_coeurs(20)  
 
-# fonction permettant de generer les bottes aleatoirement
 def generer_bottes(nombre_de_bottes):
+    """
+    Génère des bottes de manière aléatoire sur le plateau.
+
+    Args:
+        nombre_de_bottes (int): Le nombre de bottes à générer.
+
+    Returns:
+        list: Une liste contenant les objets bottes générés.
+    """
     bottes = []
 
     nombre_de_bottes = 10  
@@ -226,29 +307,35 @@ bottes = generer_bottes(20)
 
 
 # Initialisation des joueurs
+joueurs = []  # Création de la liste pour stocker les joueurs
+
 x1, y1 = position_random(0, 15, 0, 15)
 joueur1 = Joueur("Joueur 1", x1, y1, 10, 100, 10, 5)
 positionx_originale_joueur1 = x1
 positiony_originale_joueur1 = y1
 plateau.placer_joueur(joueur1, x1, y1)
+joueurs.append(joueur1)
 
 x2, y2 = position_random(48, 63, 0, 15)
 joueur2 = Joueur("Joueur 2", x2, y2, 10, 100, 10, 5)
 positionx_originale_joueur2 = x2
 positiony_originale_joueur2 = y2
 plateau.placer_joueur(joueur2, x2, y2)
+joueurs.append(joueur2)
 
 x3, y3 = position_random(0, 15, 48, 63)
 joueur3 = Joueur("Joueur 3", x3, y3, 10, 100, 10, 5)
 positionx_originale_joueur3 = x3
 positiony_originale_joueur3 = y3
 plateau.placer_joueur(joueur3, x3, y3)
+joueurs.append(joueur3)
 
 x4, y4 = position_random(48, 63, 48, 63)
 joueur4 = Joueur("Joueur 4", x4, y4, 10, 100, 10, 5)
 positionx_originale_joueur4 = x4
 positiony_originale_joueur4 = y4
 plateau.placer_joueur(joueur4, x4, y4)
+joueurs.append(joueur4)
 
 
 
@@ -311,6 +398,8 @@ while running:
                         joueuractuel.hp -= 5
                         largeur_barre_actuelle = joueuractuel.hp * 2
                         rect_barre_actuelle = (700, 100, largeur_barre_actuelle, 20)
+                    
+                    
                     
                         
                         #mouvement droite

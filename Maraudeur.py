@@ -3,9 +3,35 @@ from Enemy import Enemy
 from Joueur import Joueur
 import math
 
-# Classe pour les Maraudeur (ennemis) qui hérite de la classe Enemy
 class Maraudeur(Enemy):
+    """
+    Classe représentant un Maraudeur (ennemi) dans un jeu, héritant de la classe Enemy.
+
+    Attributes:
+        nom (str): Le nom du Maraudeur.
+        x (int): La position horizontale initiale du Maraudeur.
+        y (int): La position verticale initiale du Maraudeur.
+        taille_case (int): La taille de la case dans laquelle le Maraudeur évolue.
+        hp (int): Les points de vie actuels du Maraudeur.
+        damage (int): Les dégâts infligés par le Maraudeur.
+        mouvement (int): La vitesse de déplacement du Maraudeur.
+        path (str): Le chemin vers l'image représentant le Maraudeur.
+        mort (bool): Indique si le Maraudeur est mort ou non.
+    """
     def __init__(self, nom, x, y, taille_case, hp=150, damage=15, mouvement=2, path="img/maraudeur.png"):
+        """
+        Initialise un nouvel objet Maraudeur.
+
+        Args:
+            nom (str): Le nom du Maraudeur.
+            x (int): La position horizontale initiale du Maraudeur.
+            y (int): La position verticale initiale du Maraudeur.
+            taille_case (int): La taille de la case dans laquelle le Maraudeur évolue.
+            hp (int, optional): Les points de vie actuels du Maraudeur. Par défaut, c'est 150.
+            damage (int, optional): Les dégâts infligés par le Maraudeur. Par défaut, c'est 15.
+            mouvement (int, optional): La vitesse de déplacement du Maraudeur. Par défaut, c'est 2.
+            path (str, optional): Le chemin vers l'image représentant le Maraudeur. Par défaut, c'est "img/maraudeur.png".
+        """
         super().__init__(nom, x, y, taille_case, hp, damage, mouvement, path)
         self.path = path  
         self.hp = 150
@@ -13,8 +39,13 @@ class Maraudeur(Enemy):
         self.mouvement = 2
         self.mort = False
         
-    # Méthode pour déplacer les Maraudeur vers le joueur
     def deplacer_vers_joueur(self, joueur):
+        """
+        Méthode pour déplacer le Maraudeur vers le joueur.
+
+        Args:
+            joueur (Joueur): Le joueur à attaquer.
+        """
         dx = joueur.rect.centerx - self.rect.centerx
         dy = joueur.rect.centery - self.rect.centery
         distance = math.hypot(dx, dy)
@@ -26,29 +57,51 @@ class Maraudeur(Enemy):
         self.rect.x += dx * self.vitesse
         self.rect.y += dy * self.vitesse
     
-    # Méthode pour attaquer le joueur
     def attaquer(self, joueur):
+        """
+        Méthode pour attaquer le joueur.
+
+        Args:
+            joueur (Joueur): Le joueur à attaquer.
+        """
         joueur.hp -= self.damage
     
-    # Méthode pour mettre à jour la position du Maraudeur à sa mort
     def mourir(self):
+        """
+        Méthode pour mettre à jour la position du Maraudeur à sa mort.
+        """
         self.image.fill((0, 0, 0))
         self.rect.x = -100
         self.rect.y = -100
         self.mort = True
     
-    # Méthode pour prendre des dégats
     def prendre_degats(self, degats):
+        """
+        Méthode pour prendre des dégâts.
+
+        Args:
+            degats (int): Les dégâts infligés au Maraudeur.
+        """
         self.hp -= degats
         if self.hp <= 0:
             self.mourir()
             
-    # Méthode pour obtenir la position du Maraudeur
     def obtenir_position(self):
+        """
+        Méthode pour obtenir la position du Maraudeur.
+
+        Returns:
+            tuple: Un tuple contenant les coordonnées (x, y) du Maraudeur.
+        """
         return self.rect.x // self.taille_case, self.rect.y // self.taille_case
     
-    # Méthode pour mettre à jour la position du Maraudeur
     def update(self, joueur):
+        """
+        Méthode pour mettre à jour la position du Maraudeur.
+
+        Args:
+            joueur (Joueur): Le joueur dans le jeu.
+        """
         if self.hp <= 0:
             self.hp = 0
         else:

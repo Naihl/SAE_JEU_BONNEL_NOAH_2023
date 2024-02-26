@@ -1,8 +1,33 @@
 import pygame
 
-#classe entity permettant de créer un objet entity qui se décline en class d'enemy et de joueur
 class Entity(pygame.sprite.Sprite):
+    """
+    Classe représentant une entité dans un jeu, pouvant être utilisée pour créer des ennemis ou des joueurs.
+
+    Attributes:
+        nom (str): Le nom de l'entité.
+        hp (int): Les points de vie de l'entité.
+        damage (int): Les dégâts infligés par l'entité.
+        mouvement (int): La vitesse de déplacement de l'entité.
+        taille_case (int): La taille de la case dans laquelle l'entité évolue.
+        path (str): Le chemin vers l'image représentant l'entité.
+        image (pygame.Surface): L'image représentant l'entité.
+        rect (pygame.Rect): Le rectangle de collision de l'entité.
+    """
     def __init__(self, nom, x, y, taille_case, hp, damage, mouvement, path):
+        """
+        Initialise un nouvel objet Entity.
+
+        Args:
+            nom (str): Le nom de l'entité.
+            x (int): La position horizontale initiale de l'entité.
+            y (int): La position verticale initiale de l'entité.
+            taille_case (int): La taille de la case dans laquelle l'entité évolue.
+            hp (int): Les points de vie de l'entité.
+            damage (int): Les dégâts infligés par l'entité.
+            mouvement (int): La vitesse de déplacement de l'entité.
+            path (str): Le chemin vers l'image représentant l'entité.
+        """
         super().__init__()
         self.nom = nom
         self.hp = 100
@@ -16,8 +41,14 @@ class Entity(pygame.sprite.Sprite):
         self.rect.x = x * taille_case
         self.rect.y = y * taille_case
     
-    # Méthode pour obtenir la position des entity
     def deplacer(self, dx, dy):
+        """
+        Méthode pour déplacer l'entité.
+
+        Args:
+            dx (int): Le déplacement horizontal.
+            dy (int): Le déplacement vertical.
+        """
         self.rect.x += dx * self.taille_case
         self.rect.y += dy * self.taille_case
     
