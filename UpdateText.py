@@ -1,15 +1,38 @@
 import pygame
 
-#classe update text permettant de mettre à jour le texte du jeu (inventaire, joueur actuel, mouvement)
 class UpdateText:
+    """
+    Classe permettant de mettre à jour le texte du jeu, y compris l'inventaire, le joueur actuel et le mouvement.
+
+    Attributes:
+        fenetre_main (pygame.Surface): La surface principale sur laquelle le texte sera affiché.
+        joueurs (list): Une liste contenant les instances des joueurs dans le jeu.
+        police (pygame.font.Font): La police utilisée pour le texte principal.
+        police2 (pygame.font.Font): La police utilisée pour le texte secondaire.
+    """
     def __init__(self, fenetre_main, joueur1, joueur2, joueur3, joueur4):
+        """
+        Initialise un nouvel objet UpdateText.
+
+        Args:
+            fenetre_main (pygame.Surface): La surface principale sur laquelle le texte sera affiché.
+            joueur1 (Joueur): Le premier joueur dans le jeu.
+            joueur2 (Joueur): Le deuxième joueur dans le jeu.
+            joueur3 (Joueur): Le troisième joueur dans le jeu.
+            joueur4 (Joueur): Le quatrième joueur dans le jeu.
+        """
         self.fenetre_main = fenetre_main
         self.joueurs = [joueur1, joueur2, joueur3, joueur4]
         self.police = pygame.font.Font(None, 36)
         self.police2 = pygame.font.Font(None, 24)
 
-    # Méthode pour mettre à jour le texte
     def render(self, joueuractuel):
+        """
+        Méthode pour mettre à jour le texte affiché à l'écran.
+
+        Args:
+            joueuractuel (Joueur): Le joueur actuel dans le jeu.
+        """
         self.fenetre_main.fill((87, 80, 66))
 
         # Affiche le texte de l'inventaire de chaque joueur

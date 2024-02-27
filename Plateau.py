@@ -9,9 +9,34 @@ from Maraudeur import Maraudeur
 from Chevre import Chevre
 from Bottes import Bottes
 
-# Classe pour le plateau de jeu
 class Plateau:
+    """
+    Classe représentant le plateau de jeu.
+
+    Attributes:
+        largeur (int): La largeur du plateau.
+        hauteur (int): La hauteur du plateau.
+        taille_case (int): La taille d'une case sur le plateau.
+        joueurs (pygame.sprite.Group): Groupe contenant les joueurs sur le plateau.
+        enemies (pygame.sprite.Group): Groupe contenant les ennemis sur le plateau.
+        objet (pygame.sprite.Group): Groupe contenant les objets sur le plateau.
+        fenetre (pygame.Surface): La surface de la fenêtre du jeu.
+        terrain (list): Une liste représentant le terrain du plateau.
+        biome_tiles (dict): Un dictionnaire contenant les images des biomes du plateau.
+        plateau_liste (list): Une liste contenant les objets Case représentant chaque case du plateau.
+    """
     def __init__(self, largeur, hauteur, taille_case, joueurs=None, enemies=None, objet=None):
+        """
+        Initialise un nouvel objet Plateau.
+
+        Args:
+            largeur (int): La largeur du plateau.
+            hauteur (int): La hauteur du plateau.
+            taille_case (int): La taille d'une case sur le plateau.
+            joueurs (pygame.sprite.Group): Groupe contenant les joueurs sur le plateau (par défaut None).
+            enemies (pygame.sprite.Group): Groupe contenant les ennemis sur le plateau (par défaut None).
+            objet (pygame.sprite.Group): Groupe contenant les objets sur le plateau (par défaut None).
+        """
         self.largeur = largeur
         self.hauteur = hauteur
         self.taille_case = taille_case
@@ -47,26 +72,49 @@ class Plateau:
         
         
 
-    # Méthode pour placer un joueur sur le plateau
     def placer_joueur(self, joueur, x, y):
+        """
+        Place un joueur sur le plateau aux coordonnées spécifiées.
+
+        Args:
+            joueur (Joueur): L'instance du joueur à placer.
+            x (int): La coordonnée x où placer le joueur.
+            y (int): La coordonnée y où placer le joueur.
+        """
         joueur.rect.x = x * self.taille_case
         joueur.rect.y = y * self.taille_case
         self.joueurs.add(joueur)
     
-    # Méthode pour placer un enemy sur le plateau
     def placer_enemies(self, enemies, x, y):
+        """
+        Place un ennemi sur le plateau aux coordonnées spécifiées.
+
+        Args:
+            enemies (Enemy): L'instance de l'ennemi à placer.
+            x (int): La coordonnée x où placer l'ennemi.
+            y (int): La coordonnée y où placer l'ennemi.
+        """
         enemies.rect.x = x * self.taille_case
         enemies.rect.y = y * self.taille_case
         self.enemies.add(enemies)
     
-    # Méthode pour placer un objet sur le plateau
     def placer_objet(self, objet, x, y):
+        """
+        Place un objet sur le plateau aux coordonnées spécifiées.
+
+        Args:
+            objet (Bottes): L'instance de l'objet à placer.
+            x (int): La coordonnée x où placer l'objet.
+            y (int): La coordonnée y où placer l'objet.
+        """
         objet.rect.x = x * self.taille_case
         objet.rect.y = y * self.taille_case
         self.objet.add(objet)
 
-    # Méthode pour générer le terrain en bruit de perlin
     def generer_terrain(self):
+        """
+        Génère le terrain du plateau en utilisant le bruit de Perlin.
+        """
         terrain = [[0 for _ in range(self.largeur)] for _ in range(self.hauteur)]
         scale = 25.0
         octaves = 2
@@ -82,8 +130,16 @@ class Plateau:
 
         return terrain
 
-    # Méthode pour définir les biomes
     def set_biome(self, value):
+        """
+        Détermine le biome en fonction de la valeur fournie.
+
+        Args:
+            value (float): La valeur utilisée pour déterminer le biome.
+
+        Returns:
+            str: Le nom du biome correspondant à la valeur fournie.
+        """
         if value < -0.07:
             return "slow"
         elif value < 0:
@@ -95,19 +151,42 @@ class Plateau:
         else:
             return "sand"
 
-    # Méthode pour obtenir le biome d'une case
     def get_biome(self, x, y):
+        """
+        Obtient le biome d'une case spécifique sur le plateau.
+
+        Args:
+            x (int): La coordonnée x de la case.
+            y (int): La coordonnée y de la case.
+
+        Returns:
+            str: Le nom du biome de la case spécifiée.
+        """
         return self.terrain[y][x]
     
-    # Méthode pour obtenir le contenu d'une case
     def get_case_content(self, x, y):
+        """
+        Obtient le contenu d'une case spécifique sur le plateau.
+
+        Args:
+            x (int): La coordonnée x de la case.
+            y (int): La coordonnée y de la case.
+
+        Returns:
+            Case: L'objet Case représentant le contenu de la case spécifiée, ou None si la case est vide.
+        """
         for case in self.plateau_liste:
             if case.x == x and case.y == y:
                 return case
         return None
 
-    # Méthode pour afficher le plateau
     def afficher_plateau(self):
+        """
+        Affiche le plateau de jeu avec ses biomes, joueurs, ennemis et objets.
+        
+        Returns:
+            list: Une liste d'objets Case représentant le contenu de chaque case du plateau.
+        """
         plateau_list = []
         for x in range(self.largeur):
             for y in range(self.hauteur):
@@ -135,8 +214,10 @@ class Plateau:
         return plateau_list
 
 
-    # Boucle Principale	
     def runner(self):
+        """
+        Boucle principale du jeu qui affiche continuellement le plateau jusqu'à ce que le joueur quitte le jeu.
+        """
         running = True
         while running:
             for event in pygame.event.get():
