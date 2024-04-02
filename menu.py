@@ -104,6 +104,10 @@ while running:
                     pygame.quit()
                     subprocess.run(["python", "tutoriel.py"])
                     #bouton quitter qui quitte le jeu
+                if event.ui_element == bouton_stats:
+                    pygame.quit()
+                    subprocess.run(["python", "stats_screen.py"])
+
                 if event.ui_element == bouton_quitter:
                     running = False
                 
