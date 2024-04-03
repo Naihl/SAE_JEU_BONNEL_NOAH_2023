@@ -10,6 +10,7 @@ Date de création: 2023
 """
 
 import pygame
+import json
 import sys
 import pygame_gui
 import pygame.font
@@ -23,6 +24,7 @@ from Bottes import Bottes
 from Coeur import Coeur
 from Loup import Loup
 from Maraudeur import Maraudeur
+from stats import *
 import subprocess
 
 
@@ -304,7 +306,8 @@ def generer_bottes(nombre_de_bottes):
 bottes = generer_bottes(20) 
 
 
-
+#intialisation des stats
+stats_game = stats_game()
 
 # Initialisation des joueurs
 joueurs = []  # Création de la liste pour stocker les joueurs
@@ -352,7 +355,7 @@ current_time = pygame.time.get_ticks()
 last_update_time = current_time
 clock = pygame.time.Clock()
 
-   
+    
 updatetext = UpdateText(fenetre_main, joueur1, joueur2, joueur3, joueur4)
 
     
@@ -374,6 +377,7 @@ while running:
         last_update_time = current_time
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            stats_game.to_json()
             running = False
         touches = pygame.key.get_pressed()
         joueur_x, joueur_y = joueuractuel.obtenir_position()
@@ -389,6 +393,7 @@ while running:
                         joueuractuel.deplacer(-1, +0)
                         joueuractuel.mouvement -= 1
                         updatetext.render(joueuractuel)
+                        stats_game.add_nb_deplacement(1, joueuractuel.nom)
                         #si le joueur est sur une case slow il perd un mouvement
                     if plateau.get_case_content(joueur_x - 1, joueur_y).biome_name == "slow":
                         joueuractuel.mouvement -= 1
@@ -396,6 +401,7 @@ while running:
                         #si le joueur est sur une case dirt il perd 5 hp
                     if plateau.get_case_content(joueur_x - 1, joueur_y).biome_name == "dirt":
                         joueuractuel.hp -= 5
+                        stats_game.add_degat_subit(5, joueuractuel.nom)
                         largeur_barre_actuelle = joueuractuel.hp * 2
                         rect_barre_actuelle = (700, 100, largeur_barre_actuelle, 20)
                     
@@ -410,6 +416,7 @@ while running:
                         joueuractuel.deplacer(+1, +0)
                         joueuractuel.mouvement -= 1
                         updatetext.render(joueuractuel)
+                        stats_game.add_nb_deplacement(1, joueuractuel.nom)
                         #si le joueur est sur une case slow il perd un mouvement
                     if plateau.get_case_content(joueur_x + 1, joueur_y).biome_name == "slow":
                         joueuractuel.mouvement -= 1
@@ -417,6 +424,7 @@ while running:
                         #si le joueur est sur une case dirt il perd 5 hp
                     if plateau.get_case_content(joueur_x + 1, joueur_y).biome_name == "dirt":
                         joueuractuel.hp -= 5
+                        stats_game.add_degat_subit(5, joueuractuel.nom)
                         largeur_barre_actuelle = joueuractuel.hp * 2
                         rect_barre_actuelle = (700, 100, largeur_barre_actuelle, 20)
                     
@@ -429,6 +437,7 @@ while running:
                         joueuractuel.deplacer(+0, -1)
                         joueuractuel.mouvement -= 1
                         updatetext.render(joueuractuel)
+                        stats_game.add_nb_deplacement(1, joueuractuel.nom)
                         #si le joueur est sur une case slow il perd un mouvement
                     if plateau.get_case_content(joueur_x, joueur_y - 1).biome_name == "slow":
                         joueuractuel.mouvement -= 1
@@ -436,6 +445,7 @@ while running:
                         #si le joueur est sur une case dirt il perd 5 hp
                     if plateau.get_case_content(joueur_x, joueur_y - 1).biome_name == "dirt":
                         joueuractuel.hp -= 5
+                        stats_game.add_degat_subit(5, joueuractuel.nom)
                         largeur_barre_actuelle = joueuractuel.hp * 2
                         rect_barre_actuelle = (700, 100, largeur_barre_actuelle, 20)
                         
@@ -448,6 +458,7 @@ while running:
                         joueuractuel.deplacer(+0, +1)
                         joueuractuel.mouvement -= 1
                         updatetext.render(joueuractuel)
+                        stats_game.add_nb_deplacement(1, joueuractuel.nom)
                         #si le joueur est sur une case slow il perd un mouvement
                     if plateau.get_case_content(joueur_x, joueur_y +1).biome_name == "slow":  
                         joueuractuel.mouvement -= 1
@@ -455,6 +466,7 @@ while running:
                         #si le joueur est sur une case dirt il perd 5 hp
                     if plateau.get_case_content(joueur_x, joueur_y +1).biome_name == "dirt":  
                         joueuractuel.hp -= 5
+                        stats_game.add_degat_subit(5, joueuractuel.nom)
                         largeur_barre_actuelle = joueuractuel.hp * 2
                         rect_barre_actuelle = (700, 100, largeur_barre_actuelle, 20)
                         
@@ -508,7 +520,10 @@ while running:
                 for autre_joueur in [joueur2, joueur3, joueur4]:
                     if autre_joueur != joueuractuel and joueurs_adjacents(joueuractuel, autre_joueur):
                         autre_joueur.hp -= 15
+                        stats_game.add_degat_subit(15, autre_joueur.nom)
+                        stats_game.add_degat_inflige(15, joueuractuel.nom)
                         if autre_joueur.hp < 0:
+                            stats_game.add_nb_kills(joueuractuel.nom)
                             autre_joueur.hp = 0
 
          #permet de ramasser les bottes
@@ -541,16 +556,18 @@ while running:
         
         
         # echap pour retourner au menu
-        elif touches[pygame.K_ESCAPE]: 
+        elif touches[pygame.K_ESCAPE]:
             running = False
+            stats_game.to_json()
             pygame.quit()
             subprocess.run(["python", "menu.py"])
-          
-          #permet de passer son tour et de redonner des mouvements pour le prochain tour
+        
+        #permet de passer son tour et de redonner des mouvements pour le prochain tour
         elif joueuractuel.mouvement == 0:
             joueuractuel.mouvement = 10
             joueuractuel = tour_joueur(joueuractuel)
-              
+            stats_game.add_nb_tours()
+        
         #permet d'utiliser les bottes
         elif touches[pygame.K_b]:
             joueuractuel.utiliser_botte()
@@ -558,9 +575,26 @@ while running:
             
         # definition de la case de sortie et de ses conditions
         elif plateau.get_case_content(joueur_x, joueur_y).biome_name == "temple" and joueuractuel.nombre_peau >= 3 and joueuractuel.nombre_griffes >= 2:
+            #on recupère l'heure de fin de partie
+            now = time_checker()
+            #ecriture dans le json
+            stats_game.set_temps_fin(now)
+            stats_game.set_gagnant(joueuractuel.nom)            
+            stats_game.to_json()
+
+            #inscription dans stat global du nombre de partie complété
+            with open("data_global.json", "r") as f:
+                        data = json.load(f)
+                        with open("data_global.json", "w") as f:
+                            data["nb_partie_complete"] =+ 1
+                            json.dump(data, f, indent=4)
+            
+            
             running = False
             pygame.quit()
             subprocess.run(["python", "victoire.py"])
+            
+            
 
         #genere des chevres quand elles sont tous mortes
         elif all(chevre.rect.x == -100 for chevre in chevres):
@@ -585,7 +619,7 @@ while running:
         
         pygame.display.flip()
 
-    #mort des joueurs
+    #mort des loups
     for loup in loups:
         if loup.hp <= 0:
             loup.mourir()
@@ -624,6 +658,7 @@ while running:
 
     #mort des joueurs et reapparition en coin de carte. L'inventaire est aussi vidé
     if joueur1.hp <= 0:
+        stats_game.add_nb_morts(joueur1.nom)
         plateau.placer_joueur(joueur1, x1, y1)
         joueur1.hp = 100
         joueur1.nombre_peau = 0
@@ -632,6 +667,7 @@ while running:
         joueuractuel = tour_joueur(joueuractuel)
 
     if joueur2.hp <= 0:
+        stats_game.add_nb_morts(joueur2.nom)
         plateau.placer_joueur(joueur2, x2, y2)
         joueur2.hp = 100
         joueur2.nombre_peau = 0
@@ -640,6 +676,7 @@ while running:
         joueuractuel = tour_joueur(joueuractuel)
 
     if joueur3.hp <= 0:
+        stats_game.add_nb_morts(joueur3.nom)
         plateau.placer_joueur(joueur3, x3, y3)
         joueur3.hp = 100
         joueur3.nombre_peau = 0
@@ -648,6 +685,7 @@ while running:
         joueuractuel = tour_joueur(joueuractuel)
 
     if joueur4.hp <= 0:
+        stats_game.add_nb_morts(joueur4.nom)
         plateau.placer_joueur(joueur4, x4, y4)
         joueur4.hp = 100
         joueur4.nombre_peau = 0
