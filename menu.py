@@ -81,14 +81,6 @@ while running:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 #bouton joueur qui lance le jeu
                 if event.ui_element == bouton_jouer:
-                    # initialisation du temps de debut de partie
-                    now = time_checker()
-                    #ecriture dans le json
-                    with open("data_partie.json", "r") as f:
-                        data = json.load(f)
-                        with open("data_partie.json", "w") as f:
-                            data["temps_deb"] = str(now)
-                            json.dump(data, f, indent=4)
                             
                     with open("data_global.json", "r") as f:
                         data = json.load(f)

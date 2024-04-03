@@ -564,6 +564,7 @@ while running:
         elif joueuractuel.mouvement == 0:
             joueuractuel.mouvement = 10
             joueuractuel = tour_joueur(joueuractuel)
+            stats_game.add_nb_tours()
         
         #permet d'utiliser les bottes
         elif touches[pygame.K_b]:
@@ -575,13 +576,14 @@ while running:
             #on recupère l'heure de fin de partie
             now = time_checker()
             #ecriture dans le json
-            with open("data_partie.json", "r") as f:
-                data = json.load(f)
-                with open("data_partie.json", "w") as f:
-                    data["temps_fin"] = str(now)
-                    json.dump(data, f, indent=4)
-            
-            
+            stats_game.set_temps_fin(now)
+            stats_game.set_gagnant(joueuractuel.nom)
+            #inscription dans stat global du nombre de partie complété
+            with open("data_global.json", "r") as f:
+                        data = json.load(f)
+                        with open("data_global.json", "w") as f:
+                            data["nb_partie_complete"] =+ 1
+                            json.dump(data, f, indent=4)
             
             running = False
             pygame.quit()
