@@ -15,7 +15,39 @@ from Maraudeur import Maraudeur
 import subprocess
 import socket
 
-# Fichier principal du jeu
+# Définition des informations de connexion au serveur
+SERVER_HOST = '127.0.0.1'  # Adresse IP du serveur
+SERVER_PORT = 5555          # Port utilisé par le serveur
+
+# Initialisation du socket client
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((SERVER_HOST, SERVER_PORT))
+
+# Fonction pour envoyer des données au serveur
+def send_data(data):
+    try:
+        client_socket.send(data.encode())
+    except Exception as e:
+        print(f"Erreur lors de l'envoi de données : {e}")
+
+# Fonction pour envoyer les données de jeu au serveur
+def send_game_data():
+    # Exemple : envoyer les coordonnées du joueur au serveur
+    player_x, player_y = joueuractuel.obtenir_position()
+    data = f"PLAYER_POSITION {player_x} {player_y}"
+    send_data(data)
+
+# Fonction pour recevoir les données du serveur
+def receive_game_data():
+    try:
+        data = client_socket.recv(1024)
+        if data:
+            # Traitez les données reçues du serveur ici (mise à jour de l'état du jeu, etc.)
+            print(f"Reçu des données du serveur : {data.decode()}")
+    except Exception as e:
+        print(f"Erreur lors de la réception de données : {e}")
+        
+#fichier principale du jeu
 
 # Initialisation des variables du plateau
 largeur_plateau = 64
@@ -121,29 +153,7 @@ def deplacer_maraudeurs_vers_joueur(joueur, maraudeurs):
         else:
             maraudeur.deplacer(deplacement_x, deplacement_y)
 
-# fonction permettant de changer les tours des joueurs
-def tour_joueur(joueuractuel):
-    if joueuractuel == joueur1:
-        deplacer_loups_vers_joueur(joueuractuel, loups)
-        deplacer_maraudeurs_vers_joueur(joueuractuel, maraudeurs)
-        joueuractuel = joueur2
-        updatetext.render(joueuractuel)
-    elif joueuractuel == joueur2:
-        deplacer_loups_vers_joueur(joueuractuel, loups)
-        deplacer_maraudeurs_vers_joueur(joueuractuel, maraudeurs)
-        joueuractuel = joueur3
-        updatetext.render(joueuractuel)
-    elif joueuractuel == joueur3:
-        deplacer_loups_vers_joueur(joueuractuel, loups)
-        deplacer_maraudeurs_vers_joueur(joueuractuel, maraudeurs)
-        joueuractuel = joueur4
-        updatetext.render(joueuractuel)
-    elif joueuractuel == joueur4:
-        deplacer_loups_vers_joueur(joueuractuel, loups)
-        deplacer_maraudeurs_vers_joueur(joueuractuel, maraudeurs)
-        joueuractuel = joueur1
-        updatetext.render(joueuractuel)
-    return joueuractuel
+
 
 # fonction permettant de generer une position aleatoirement
 def position_random(a,b,c,d):
