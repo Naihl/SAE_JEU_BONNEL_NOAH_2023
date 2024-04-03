@@ -4,6 +4,38 @@ from Enemy import Enemy
 from Bottes import Bottes
 import Plateau
 import math
+import subprocess
+import socket
+
+# Configuration du client
+SERVER_HOST = '127.0.0.1'
+SERVER_PORT = 5555
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((SERVER_HOST, SERVER_PORT))
+
+def send_data(data):
+    try:
+        client_socket.send(data.encode())
+    except Exception as e:
+        print(f"Erreur lors de l'envoi de données : {e}")
+
+# Incorporer cette fonction dans votre boucle de jeu pour envoyer les données au serveur
+def send_game_data():
+    # Exemple : envoyer les coordonnées du joueur au serveur
+    player_x, player_y = joueuractuel.obtenir_position()
+    data = f"PLAYER_POSITION {player_x} {player_y}"
+    send_data(data)
+
+# Incorporer cette fonction dans votre boucle de jeu pour recevoir les données du serveur
+def receive_game_data():
+    try:
+        data = client_socket.recv(1024)
+        if data:
+            # Traitez les données reçues du serveur ici (mise à jour de l'état du jeu, etc.)
+            print(f"Reçu des données du serveur : {data.decode()}")
+    except Exception as e:
+        print(f"Erreur lors de la réception de données : {e}")
 
 #classe joueur permettant de créer un objet joueur
 class Joueur(Entity):

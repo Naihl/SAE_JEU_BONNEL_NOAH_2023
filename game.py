@@ -13,6 +13,7 @@ from Coeur import Coeur
 from Loup import Loup
 from Maraudeur import Maraudeur
 import subprocess
+import socket
 
 # Fichier principal du jeu
 
@@ -313,7 +314,7 @@ while running:
                         rect_barre_actuelle = (700, 100, largeur_barre_actuelle, 20)
                     
                         
-                        #mouvement droite
+            #mouvement droite
             elif touches[pygame.K_RIGHT]:
                 if joueuractuel.verif_deplacement(+1, +0, largeur_plateau, hauteur_plateau):
                     #si le joueur n'est pas sur une case bleue il peut se deplacer
@@ -332,7 +333,7 @@ while running:
                         rect_barre_actuelle = (700, 100, largeur_barre_actuelle, 20)
                     
                     
-                    #mouvement haut
+            #mouvement haut
             elif touches[pygame.K_UP]:
                 if joueuractuel.verif_deplacement(+0, -1, largeur_plateau, hauteur_plateau):
                     #si le joueur n'est pas sur une case bleue il peut se deplacer
@@ -351,7 +352,7 @@ while running:
                         rect_barre_actuelle = (700, 100, largeur_barre_actuelle, 20)
                         
                     
-                    #mouvement bas
+            #mouvement bas
             elif touches[pygame.K_DOWN]:
                 if joueuractuel.verif_deplacement(+0, +1, largeur_plateau, hauteur_plateau):
                     #si le joueur n'est pas sur une case bleue il peut se deplacer
@@ -448,9 +449,7 @@ while running:
         
         #permet de remettre les mouvements à 0 en fin de tour pour eviter de casser le jeu
         if joueuractuel.mouvement<0:
-            joueuractuel.mouvement = 0
-        
-        
+            joueuractuel.mouvement = 0        
         # echap pour retourner au menu
         elif touches[pygame.K_ESCAPE]: 
             running = False
