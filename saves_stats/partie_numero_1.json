@@ -1,6 +1,8 @@
 {
     "temps_deb": "21:08:04",
-    "temps_fin": "",
+    "temps_fin": "partie non completee",
+    "nb_tours": 4,
+    "gagnant": "partie non completee",
     "nb_deplacement": [
         17,
         5,
@@ -19,7 +21,6 @@
         0,
         0
     ],
-    "gagnant": "",
     "nb_kills": [
         0,
         0,
@@ -31,6 +32,6 @@
         0,
         0,
         0
-    ],
-    "nb_tours": 4
+    ]
+    
 }

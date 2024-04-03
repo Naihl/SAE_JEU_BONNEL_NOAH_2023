@@ -586,7 +586,7 @@ while running:
             with open("data_global.json", "r") as f:
                         data = json.load(f)
                         with open("data_global.json", "w") as f:
-                            data["nb_partie_complete"] =+ 1
+                            data["nb_partie_completee"] =+ 1
                             json.dump(data, f, indent=4)
             
             

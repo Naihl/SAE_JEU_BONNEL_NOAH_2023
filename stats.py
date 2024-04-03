@@ -6,14 +6,15 @@ class stats_game:
 
     def __init__(self):
         self.temps_deb = time_checker() 
-        self.temps_fin = "" 
+        self.temps_fin = "partie non completee" 
+        self.gagnant = "partie non completee"
+        self.nb_tours = 0
         self.nb_deplacement = [0,0,0,0]
         self.degat_subit = [0,0,0,0] 
         self.degat_inflige = [0,0,0,0] 
-        self.gagnant = ""
         self.nb_kills = [0,0,0,0] #ne prend en compte que le pvp
         self.nb_morts = [0,0,0,0]
-        self.nb_tours = 0
+        
 
     #getters
     def get_temps_deb(self):
