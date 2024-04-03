@@ -69,26 +69,3 @@ while nombre_joueurs_connectes < nombre_joueurs_attendus:
 serveur.close()
 
 
-# fonction permettant de changer les tours des joueurs
-def tour_joueur(joueuractuel):
-    if joueuractuel == joueur1:
-        deplacer_loups_vers_joueur(joueuractuel, loups)
-        deplacer_maraudeurs_vers_joueur(joueuractuel, maraudeurs)
-        joueuractuel = joueur2
-        updatetext.render(joueuractuel)
-    elif joueuractuel == joueur2:
-        deplacer_loups_vers_joueur(joueuractuel, loups)
-        deplacer_maraudeurs_vers_joueur(joueuractuel, maraudeurs)
-        joueuractuel = joueur3
-        updatetext.render(joueuractuel)
-    elif joueuractuel == joueur3:
-        deplacer_loups_vers_joueur(joueuractuel, loups)
-        deplacer_maraudeurs_vers_joueur(joueuractuel, maraudeurs)
-        joueuractuel = joueur4
-        updatetext.render(joueuractuel)
-    elif joueuractuel == joueur4:
-        deplacer_loups_vers_joueur(joueuractuel, loups)
-        deplacer_maraudeurs_vers_joueur(joueuractuel, maraudeurs)
-        joueuractuel = joueur1
-        updatetext.render(joueuractuel)
-    return joueuractuel
