@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 
 class stats_game:
     
@@ -82,9 +83,31 @@ class stats_game:
     def add_nb_tours(self):
         self.nb_tours += 1
 
+    def to_json(self):
+            # Open the global data file and get the game number
+            with open('./saves_stats/data_global.json', 'r') as f:
+                data_global = json.load(f)
+                game_number = data_global['nb_partie_jouee']
 
-    #def dump_to_json(self):
-        #TODO ecriture dans le json, 
+            # Prepare the game data
+            data = {
+                'temps_deb': self.temps_deb,
+                'temps_fin': self.temps_fin,
+                'nb_deplacement': self.nb_deplacement,
+                'degat_subit': self.degat_subit,
+                'degat_inflige': self.degat_inflige,
+                'gagnant': self.gagnant,
+                'nb_kills': self.nb_kills,
+                'nb_morts': self.nb_morts,
+                'nb_tours': self.nb_tours
+            }
+
+            # Write the game data to a new file
+            with open(f'./saves_stats/partie_numero_{game_number}.json', 'w') as f:
+                json.dump(data, f, indent=4)
+
+    
+    
 
 def time_checker():
     
@@ -97,11 +120,6 @@ def time_diff(start, end):
     return diff
 
 
-    
 
 
 
-
-#possibilité de stockage json : 
-#{faire le stockage au fur et à mesure de avancement de la partie}
-# { tout dump à la fin de la partie}

@@ -16,7 +16,7 @@ manager = pygame_gui.UIManager((largeur_menu, hauteur_menu),"./img/font.json")
 
 
 bouton_retour = pygame_gui.elements.UIButton(
-    relative_rect=pygame.Rect((300, 450), (200, 50)),
+    relative_rect=pygame.Rect((300, 550), (200, 50)),
     text="retour",
     manager=manager
 )

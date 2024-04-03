@@ -1,2 +1,15 @@
 *.pyc
 /__pycache__
+__pycache__/Bottes.cpython-310.pyc
+__pycache__/Case.cpython-310.pyc
+__pycache__/Chevre.cpython-310.pyc
+__pycache__/Coeur.cpython-310.pyc
+__pycache__/Enemy.cpython-310.pyc
+__pycache__/Entity.cpython-310.pyc
+__pycache__/HealthBar.cpython-310.pyc
+__pycache__/Joueur.cpython-310.pyc
+__pycache__/Loup.cpython-310.pyc
+__pycache__/Maraudeur.cpython-310.pyc
+__pycache__/Plateau.cpython-310.pyc
+__pycache__/UpdateText.cpython-310.pyc
+*.pyc

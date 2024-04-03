@@ -377,6 +377,7 @@ while running:
         last_update_time = current_time
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            stats_game.to_json()
             running = False
         touches = pygame.key.get_pressed()
         joueur_x, joueur_y = joueuractuel.obtenir_position()
@@ -557,6 +558,7 @@ while running:
         # echap pour retourner au menu
         elif touches[pygame.K_ESCAPE]:
             running = False
+            stats_game.to_json()
             pygame.quit()
             subprocess.run(["python", "menu.py"])
         
@@ -577,13 +579,16 @@ while running:
             now = time_checker()
             #ecriture dans le json
             stats_game.set_temps_fin(now)
-            stats_game.set_gagnant(joueuractuel.nom)
+            stats_game.set_gagnant(joueuractuel.nom)            
+            stats_game.to_json()
+
             #inscription dans stat global du nombre de partie complété
             with open("data_global.json", "r") as f:
                         data = json.load(f)
                         with open("data_global.json", "w") as f:
                             data["nb_partie_complete"] =+ 1
                             json.dump(data, f, indent=4)
+            
             
             running = False
             pygame.quit()

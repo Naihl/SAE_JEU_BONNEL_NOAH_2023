@@ -57,19 +57,6 @@ bouton_quitter = pygame_gui.elements.UIButton(
     text="Quitter",
     manager=manager
 )
-
-
-
-# initialisation du temps de debut de partie
-now = time_checker()
-#ecriture dans le json
-with open("data_partie.json", "r") as f:
-    data = json.load(f)
-with open("data_partie.json", "w") as f:
-    data["temps_deb"] = str(now)
-    json.dump(data, f, indent=4)
-    
-
 # Boucle principale du menu    
 running = True
 while running:
@@ -82,11 +69,12 @@ while running:
                 #bouton joueur qui lance le jeu
                 if event.ui_element == bouton_jouer:
                             
-                    with open("data_global.json", "r") as f:
+                    with open("./saves_stats/data_global.json", "r+") as f:
                         data = json.load(f)
-                        with open("data_global.json", "w") as f:
-                            data["nb_partie_jouee"] =+ 1
-                            json.dump(data, f, indent=4)
+                        data["nb_partie_jouee"] += 1
+                        f.seek(0)
+                        json.dump(data, f, indent=4)
+                        f.truncate()
                     
                     #lancement du jeu
                     pygame.quit()
