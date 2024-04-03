@@ -1,5 +1,91 @@
-
 from datetime import datetime
+
+class stats_game:
+    
+
+    def __init__(self):
+        self.temps_deb = time_checker() #fait
+        self.temps_fin = ""
+        self.nb_deplacement = [0,0,0,0] #fait
+        self.degat_subit = [0,0,0,0] #fait
+        self.degat_inflige = [0,0,0,0] #fait
+        self.gagnant = ""
+        self.nb_kills = [0,0,0,0] #fait
+        self.nb_morts = [0,0,0,0] #fait
+        self.nb_tours = 0
+
+    #getters
+    def get_temps_deb(self):
+        return self.temps_deb
+    
+    def get_temps_fin(self):
+        return self.temps_fin
+     
+    def get_nb_deplacement(self):
+        return self.nb_deplacement
+    
+    def get_degat_subit(self):
+        return self.degat_subit
+    
+    def get_degat_inflige(self):
+        return self.degat_inflige
+    
+    def get_gagnant(self):
+        return self.gagnant
+    
+    def set_temps_fin(self):
+        self.temps_fin = time_checker()
+
+
+    #setters
+    def set_degat_subit(self, degat_subit:int, joueur:int):
+        self.degat_subit[joueur] = degat_subit
+    
+    def set_degat_inflige(self, degat_inflige:int, joueur:int):
+        self.degat_inflige[joueur] = degat_inflige
+
+    def set_gagnant(self, gagnant:str):
+        self.gagnant = gagnant
+
+
+    #methodes
+    def add_nb_deplacement(self, deplacement:int, joueuractuel:str):
+        last_char = joueuractuel[-1]
+        joueur_id = int(last_char)-1
+        self.nb_deplacement[joueur_id] += deplacement
+
+    
+    def add_degat_subit(self, degat:int, joueuractuel:str):
+        last_char = joueuractuel[-1]
+        joueur_id = int(last_char)-1
+        self.degat_subit[joueur_id] += degat
+
+    
+    def add_degat_inflige(self, degat:int, joueuractuel:str):
+        last_char = joueuractuel[-1]
+        joueur_id = int(last_char)-1
+        self.degat_inflige[joueur_id] += degat
+
+
+    def add_nb_kills(self, joueuractuel:str):
+        last_char = joueuractuel[-1]
+        joueur_id = int(last_char)-1
+        self.nb_kills[joueur_id] += 1
+
+
+    def add_nb_morts(self, joueuractuel:str):
+        last_char = joueuractuel[-1]
+        joueur_id = int(last_char)-1
+        self.nb_morts[joueur_id] += 1
+
+    
+    def add_nb_tours(self):
+        self.nb_tours += 1
+
+
+    #def dump_to_json(self):
+        #TODO ecriture dans le json, 
+
 def time_checker():
     
     now = datetime.now()
@@ -13,13 +99,7 @@ def time_diff(start, end):
 
     
 
-if __name__ == "__main__":
-    start = time_checker()
-    print(start)
-    end = time_checker()
-    print(end)
-    print(time_diff(start,end))
-    print(time_diff(start,end).total_seconds())
+
 
 
 #possibilité de stockage json : 
