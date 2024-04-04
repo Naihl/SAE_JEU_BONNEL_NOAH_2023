@@ -203,6 +203,10 @@ while running:
         textechap = font1.render(messageechap, True, (0, 0, 0))
         fenetre.blit(textechap, (100, 400))
         
+        messageh = "H: Activer un boost de vie une fois par partie"
+        texteh = font1.render(messageh, True, (0, 0, 0))
+        fenetre.blit(texteh, (100, 450))
+        
         
         
 

@@ -1,14 +1,14 @@
 King of Sand
 
-Bienvenue dans mon jeu!
+Bienvenue dans notre jeu!
 
-Comment utiliser mon jeu:
+Comment utiliser notre jeu:
 
 1. Telecharger l'ensemble des fichiers
 2. Ouvrir le dossier dans VSCode
 3. Executez le fichier 'menu.py'
 4. Vous pouvez ensuite jouer au jeu. Vous avez le choix entre regarder
-le tuto ou lancer directement le jeu
+le tuto, regarder les stats ou lancer directement le jeu
 
 
 King of Sand est un jeu de plateau à 4 joueurs ou le but est d'eliminer
