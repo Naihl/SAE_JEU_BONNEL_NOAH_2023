@@ -39,7 +39,7 @@ class Loup(Enemy):
         self.mouvement = 2
         self.mort = False
     
-    def deplacer_vers_joueur(self, joueur):
+    def deplacer_vers_joueur(self, joueur : Joueur):
         """
         Méthode pour déplacer le loup vers le joueur.
 
@@ -57,7 +57,7 @@ class Loup(Enemy):
         self.rect.x += dx * self.vitesse
         self.rect.y += dy * self.vitesse
     
-    def attaquer(self, joueur):
+    def attaquer(self, joueur : Joueur):
         """
         Méthode pour attaquer le joueur.
 
@@ -75,7 +75,7 @@ class Loup(Enemy):
         self.rect.y = -100
         self.mort = True
         
-    def prendre_degats(self, degats):
+    def prendre_degats(self, degats : int):
         """
         Méthode pour prendre des dégâts.
 
@@ -95,7 +95,7 @@ class Loup(Enemy):
         """
         return self.rect.x // self.taille_case, self.rect.y // self.taille_case
     
-    def update(self, joueur):
+    def update(self, joueur: Joueur):
         """
         Méthode pour mettre à jour la position du loup.
 
@@ -106,7 +106,7 @@ class Loup(Enemy):
             self.hp = 0
         else:
             self.deplacer_vers_joueur(joueur)
-            self.attaquer_joueur(joueur)
+            self.attaquer(joueur)
         
     
     @property
