@@ -19,6 +19,7 @@ menu_label = pygame_gui.elements.UILabel(
     manager=manager
 )
 
+
 bouton_jouer = pygame_gui.elements.UIButton(
     relative_rect=pygame.Rect((300, 250), (200, 50)),
     text="Jouer",
@@ -65,7 +66,7 @@ while running:
         manager.process_events(event)
 
     manager.update(1 / 60)
-    fenetre_menu.fill((87, 80, 66))
+    fenetre_menu.blit(pygame.image.load("img/background.png"),(0,0))
     manager.draw_ui(fenetre_menu)
     pygame.display.update()
 

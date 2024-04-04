@@ -13,6 +13,7 @@ from Coeur import Coeur
 from Loup import Loup
 from Maraudeur import Maraudeur
 import subprocess
+import time
 
 # Fichier principal du jeu
 
@@ -30,14 +31,62 @@ hauteur_main = hauteur_plateau * taille_case + 150
 fenetre_main = pygame.display.set_mode((largeur_main + plateau.largeur * plateau.taille_case - 200, hauteur_main ))
 pygame.display.set_caption("King of Sand")
 
+# Ajouter ces variables globales pour stocker les coordonnées de la caméra
+camera_x = 0
+camera_y = 0
+
+# Dans la fonction de rendu du plateau, utilisez les coordonnées de la caméra pour dessiner la partie visible du plateau
+def afficher_plateau_zoom(plateau, fenetre, taille_case, zoom):
+    for case_x in range(camera_x, camera_x + largeur_main // taille_case + 1):
+        for case_y in range(camera_y, camera_y + hauteur_main // taille_case + 1):
+            # Assurez-vous de ne pas dépasser les limites du plateau
+            if case_x < 0 or case_x >= plateau.largeur or case_y < 0 or case_y >= plateau.hauteur:
+                continue
+            case = plateau.get_case_content(case_x, case_y)
+            rect = pygame.Rect((case_x - camera_x) * taille_case * zoom, (case_y - camera_y) * taille_case * zoom, taille_case * zoom, taille_case * zoom)
+            pygame.draw.rect(fenetre, case.couleur, rect)
+
+# Dans la boucle principale, mettez à jour les coordonnées de la caméra en fonction de la position du joueur
+
+
+# Dans les fonctions de zoomer et dézoomer, ajustez également les coordonnées de la caméra pour suivre le joueur
+'''def zoomer_plateau(taille_case, zoom, joueuractuel: Joueur):
+    joueur_x, joueur_y = joueuractuel.obtenir_position()
+    zoom += 1
+    taille_case *= zoom
+    joueuractuel.image = pygame.transform.scale(joueuractuel.image, (taille_case, taille_case))
+    joueuractuel.rect = joueuractuel.image.get_rect()
+    # Mettre à jour les coordonnées de la caméra pour suivre le joueur lors du zoom
+    camera_x = max(0, joueur_x - largeur_main // (2 * taille_case * zoom))
+    camera_y = max(0, joueur_y - hauteur_main // (2 * taille_case * zoom))
+    camera_x = min(camera_x, plateau.largeur - largeur_main // (taille_case * zoom))
+    camera_y = min(camera_y, plateau.hauteur - hauteur_main // (taille_case * zoom))
+    return taille_case, zoom'''
+
+def dezoomer_plateau(taille_case, zoom, joueuractuel : Joueur):
+    joueur_x, joueur_y = joueuractuel.obtenir_position()
+    if zoom > 1:
+        zoom -= 1
+        taille_case = int(taille_case / zoom)
+        joueuractuel.image = pygame.transform.scale(joueuractuel.image, (taille_case, taille_case))
+        joueuractuel.rect = joueuractuel.image.get_rect()
+        # Mettre à jour les coordonnées de la caméra pour suivre le joueur lors du dézoom
+        camera_x = max(0, joueur_x - largeur_main // (2 * taille_case * zoom))
+        camera_y = max(0, joueur_y - hauteur_main // (2 * taille_case * zoom))
+        camera_x = min(camera_x, plateau.largeur - largeur_main // (taille_case * zoom))
+        camera_y = min(camera_y, plateau.hauteur - hauteur_main // (taille_case * zoom))
+    return taille_case, zoom
+
+
+
 # fonction permettant de voir si le joueur est à coté d'un autre joueur
-def joueurs_adjacents(joueur1, joueur2):
+def joueurs_adjacents(joueur1 : Joueur, joueur2 : Joueur):
     x1, y1 = joueur1.obtenir_position()
     x2, y2 = joueur2.obtenir_position()
     return abs(x1 - x2) + abs(y1 - y2) == 1
 
 # fonction permettant de deplacer les loups vers le joueur
-def deplacer_loups_vers_joueur(joueur, loups):
+def deplacer_loups_vers_joueur(joueur : Joueur, loups: list[Loup]):
     # Parcoure tous les loups
     for loup in loups:
         # Ignore les loups déjà éliminés
@@ -79,7 +128,7 @@ def deplacer_loups_vers_joueur(joueur, loups):
             loup.deplacer(deplacement_x, deplacement_y)
             
 # fonction permettant de deplacer les maraudeurs vers le joueur
-def deplacer_maraudeurs_vers_joueur(joueur, maraudeurs):
+def deplacer_maraudeurs_vers_joueur(joueur : Joueur, maraudeurs : list[Maraudeur]):
     # Parcoure tous les maraudeurs
     for maraudeur in maraudeurs:
         # Ignore les maraudeurs déjà éliminés
@@ -279,9 +328,22 @@ healthbar2 = HealthBar(fenetre_main, joueur2, 700, 250)
 healthbar3 = HealthBar(fenetre_main, joueur3, 700, 400)
 healthbar4 = HealthBar(fenetre_main, joueur4, 700, 550)
 
+taille_case = 10
+zoom = 1
+cpt = 0
+
+pygame.mixer.music.load("sfx/bg.mp3")
+pygame.mixer.music.play(-1)
+
 # Boucle principale
 running = True
 while running:
+    
+    joueur_x, joueur_y = joueuractuel.obtenir_position()
+    camera_x = max(0, joueur_x - largeur_main // (2 * taille_case * zoom))
+    camera_y = max(0, joueur_y - hauteur_main // (2 * taille_case * zoom))
+    camera_x = min(camera_x, plateau.largeur - largeur_main // (taille_case * zoom))
+    camera_y = min(camera_y, plateau.hauteur - hauteur_main // (taille_case * zoom))
     clock.tick(60)  
     if current_time - last_update_time >= 100:
         last_update_time = current_time
@@ -290,10 +352,23 @@ while running:
             running = False
         touches = pygame.key.get_pressed()
         joueur_x, joueur_y = joueuractuel.obtenir_position()
+        
+        if touches[pygame.K_h]:
+            if cpt == 0:
+                joueuractuel.hp = 100
+                cpt = 1
+                updatetext.render(joueuractuel)
+                largeur_barre_actuelle = joueuractuel.hp * 2
+                rect_barre_actuelle = (700, 100, largeur_barre_actuelle, 20)
+                
 
         # si le joueur à des mouvements restants
         if joueuractuel.mouvement > 0:
-            
+            if touches[pygame.K_z]:
+                for x in range(joueur_x - 5, joueur_x + 6):
+                    for y in range(joueur_y - 5, joueur_y + 6):
+                        if x >= 0 and x < largeur_plateau and y >= 0 and y < hauteur_plateau:
+                            pygame.draw.rect(fenetre_main, (255, 0, 0, 20), (x * taille_case, y * taille_case, taille_case, taille_case))
             #mouvement gauche
             if touches[pygame.K_LEFT]:
                 if joueuractuel.verif_deplacement(-1, +0, largeur_plateau, hauteur_plateau):
@@ -432,6 +507,9 @@ while running:
                 positiony_originale_joueur5 = y5
                 plateau.placer_objet(botte, x5, y5)
                 updatetext.render(joueuractuel)
+                fenetre_main.blit(botte.image, (botte.rect.x, botte.rect.y))
+                pygame.display.flip()
+                time.sleep(1)
 
                 
         #permet de ramasser les coeurs
@@ -445,6 +523,10 @@ while running:
                 x_coeur, y_coeur = position_random(0, 63, 0, 63)
                 coeur.rect.x = x_coeur * 10
                 coeur.rect.y = y_coeur * 10
+                fenetre_main.blit(coeur.image, (coeur.rect.x, coeur.rect.y))
+                pygame.display.flip()
+                time.sleep(1)
+
         
         #permet de remettre les mouvements à 0 en fin de tour pour eviter de casser le jeu
         if joueuractuel.mouvement<0:

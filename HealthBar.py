@@ -1,8 +1,9 @@
 import pygame
+from Joueur import Joueur
 
 #classe healthbar permettant de créer une barre de vie
 class HealthBar:
-    def __init__(self, fenetre, joueur, x, y):
+    def __init__(self, fenetre, joueur : Joueur, x, y):
         self.fenetre = fenetre
         self.joueur = joueur
         self.x = x

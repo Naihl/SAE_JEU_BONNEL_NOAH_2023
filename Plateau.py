@@ -30,9 +30,9 @@ class Plateau:
         #creation des images des biomes(briome = type de terrain/case)
         self.biome_tiles = {
             "blue": pygame.image.load("img/blue.jpg"),  
-            "dirt": pygame.image.load("img/sand.jpg"),  
-            "grass": pygame.image.load("img/grass.jpg"),  
-            "slow": pygame.image.load("img/slow.jpg"),  
+            "dirt": pygame.image.load("img/sand.png"),  
+            "grass": pygame.image.load("img/grass.png"),  
+            "slow": pygame.image.load("img/slow.png"),  
             "sand": pygame.image.load("img/sand.jpg"), 
             "temple": pygame.image.load("img/temple.jpg")
         }
@@ -48,19 +48,19 @@ class Plateau:
         
 
     # Méthode pour placer un joueur sur le plateau
-    def placer_joueur(self, joueur, x, y):
+    def placer_joueur(self, joueur : Joueur, x : int, y : int):
         joueur.rect.x = x * self.taille_case
         joueur.rect.y = y * self.taille_case
         self.joueurs.add(joueur)
     
     # Méthode pour placer un enemy sur le plateau
-    def placer_enemies(self, enemies, x, y):
+    def placer_enemies(self, enemies : Enemy, x : int, y : int):
         enemies.rect.x = x * self.taille_case
         enemies.rect.y = y * self.taille_case
         self.enemies.add(enemies)
     
     # Méthode pour placer un objet sur le plateau
-    def placer_objet(self, objet, x, y):
+    def placer_objet(self, objet, x : int, y : int):
         objet.rect.x = x * self.taille_case
         objet.rect.y = y * self.taille_case
         self.objet.add(objet)
@@ -100,7 +100,7 @@ class Plateau:
         return self.terrain[y][x]
     
     # Méthode pour obtenir le contenu d'une case
-    def get_case_content(self, x, y):
+    def get_case_content(self, x, y) -> Case: 
         for case in self.plateau_liste:
             if case.x == x and case.y == y:
                 return case
@@ -133,7 +133,16 @@ class Plateau:
 
         pygame.display.flip()
         return plateau_list
-
+    
+    def zoomer_plateau(self, joueur : Joueur):
+        plateau_list = []
+        vision_joueur = 10
+        for x in range(-vision_joueur,vision_joueur+1):
+            for y in range(-vision_joueur,vision_joueur+1):
+                biome_name = self.terrain[joueur.case_actuelle[0]+y][joueur.case_actuelle[1]+x]
+                tile_biome = self.biome_tiles[biome_name]
+                self.fenetre.blit(tile_biome, (x*self.taille_case, y * self.taille_case))
+                plateau_list.append(Case(biome_name,x,y))
 
      # Boucle Principale	
     def runner(self):
