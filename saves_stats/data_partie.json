@@ -1,0 +1,12 @@
+{
+    "temps_deb": "",
+    "temps_fin": "",
+    "gagnant": "",
+    "nb_tours":0,
+    "nb_deplacement": [0,0,0,0],
+    "degat_subit": [0,0,0,0],
+    "degat_inflige": [0,0,0,0],
+    "nb_kills": [0,0,0,0],
+    "nb_morts": [0,0,0,0]
+    
+}

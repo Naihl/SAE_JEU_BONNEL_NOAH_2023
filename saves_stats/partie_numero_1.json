@@ -1,0 +1,37 @@
+{
+    "temps_deb": "21:08:04",
+    "temps_fin": "partie non completee",
+    "nb_tours": 4,
+    "gagnant": "partie non completee",
+    "nb_deplacement": [
+        17,
+        5,
+        5,
+        8
+    ],
+    "degat_subit": [
+        0,
+        0,
+        0,
+        5
+    ],
+    "degat_inflige": [
+        0,
+        0,
+        0,
+        0
+    ],
+    "nb_kills": [
+        0,
+        0,
+        0,
+        0
+    ],
+    "nb_morts": [
+        0,
+        0,
+        0,
+        0
+    ]
+    
+}

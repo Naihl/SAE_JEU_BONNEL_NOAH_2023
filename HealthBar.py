@@ -1,4 +1,5 @@
 import pygame
+from Joueur import Joueur
 
 class HealthBar:
     """
@@ -14,7 +15,7 @@ class HealthBar:
         couleur_sante_max (tuple): La couleur de la barre de vie lorsque la santé est au maximum.
         couleur_sante_actuelle (tuple): La couleur de la barre de vie en fonction de la santé actuelle du joueur.
     """
-    def __init__(self, fenetre, joueur, x, y):
+    def __init__(self, fenetre, joueur : Joueur, x, y):
         """
         Initialise une nouvelle instance de HealthBar.
 
