@@ -48,6 +48,19 @@ pygame.display.set_caption("King of Sand")
 
 
 def afficher_menu():
+    """
+    Affiche le menu de sélection du nombre de joueurs.
+
+    Cette fonction affiche un menu où le joueur peut sélectionner le nombre de joueurs
+    pour commencer la partie. Le menu est affiché à l'écran avec une image d'arrière-plan
+    et le texte "Choisissez le nombre de joueurs (entre 1 et 4):" en noir au centre de l'écran.
+    Le joueur peut utiliser les touches numériques de 1 à 4 pour sélectionner le nombre de joueurs
+    et appuyer sur la touche "Entrée" pour confirmer son choix.
+
+    Returns:
+        Tuple[int, int]: Un tuple contenant le nombre de joueurs choisi et le nombre d'IA
+        qui participeront à la partie.
+    """
     fenetre_main.fill((87, 80, 66))
     
     # Chargement de l'image d'arrière-plan
@@ -398,6 +411,21 @@ bottes = generer_bottes(20)
 
 
 def faire_tour_ia(joueuractuel):
+    """
+    Effectue le tour d'une intelligence artificielle (IA) dans le jeu.
+
+    Cette fonction gère le tour d'une IA dans le jeu. L'IA prend des décisions en fonction de différents critères,
+    notamment la santé du joueur, la présence d'autres entités telles que des coeurs, des loups ou des chèvres,
+    et la nécessité pour le joueur de collecter des ressources telles que des griffes ou du cuir. L'IA déplace le joueur
+    en fonction de ces critères et des règles du jeu, telles que les déplacements autorisés sur différentes cases
+    du plateau. Elle peut également attaquer des ennemis si elle est à portée.
+
+    Args:
+        joueuractuel (Joueur): Le joueur contrôlé par l'IA.
+
+    Returns:
+        None
+    """
     joueur_x, joueur_y = joueuractuel.obtenir_position()
     loup_cible = None
     cible_chevre = None
@@ -527,6 +555,21 @@ def faire_tour_ia(joueuractuel):
 
 
 def trouver_cuir_plus_proche(joueur_x, joueur_y):
+    """
+    Trouve la position du cuir le plus proche par rapport à un joueur donné.
+
+    Cette fonction parcourt toutes les chèvres présentes dans le jeu pour déterminer celle
+    qui est la plus proche du joueur. Elle calcule la distance entre le joueur et chaque
+    chèvre et retourne les coordonnées de la chèvre la plus proche.
+
+    Args:
+        joueur_x (int): La coordonnée x du joueur.
+        joueur_y (int): La coordonnée y du joueur.
+
+    Returns:
+        Tuple[int, int] or None: Les coordonnées (x, y) du cuir le plus proche par rapport
+        au joueur, ou None si aucune chèvre n'est présente dans le jeu.
+    """
     plus_proche_distance = float('inf')
     plus_proche_cuir = None
     for chevre in chevres:
@@ -538,6 +581,21 @@ def trouver_cuir_plus_proche(joueur_x, joueur_y):
     return plus_proche_cuir.x, plus_proche_cuir.y
 
 def trouver_griffes_plus_proches(joueur_x, joueur_y):
+    """
+    Trouve la position des griffes les plus proches par rapport à un joueur donné.
+
+    Cette fonction parcourt tous les loups présents dans le jeu pour déterminer celui
+    qui est le plus proche du joueur. Elle calcule la distance entre le joueur et chaque
+    loup et retourne les coordonnées du loup le plus proche.
+
+    Args:
+        joueur_x (int): La coordonnée x du joueur.
+        joueur_y (int): La coordonnée y du joueur.
+
+    Returns:
+        Tuple[int, int] or None: Les coordonnées (x, y) des griffes les plus proches par rapport
+        au joueur, ou None si aucun loup n'est présent dans le jeu.
+    """
     plus_proche_distance = float('inf')
     plus_proche_griffes = None
     for loup in loups:
@@ -551,10 +609,39 @@ def trouver_griffes_plus_proches(joueur_x, joueur_y):
 
 
 def deplacer_vers(joueur, cible_x, cible_y):
+    """
+    Déplace un joueur vers une cible donnée.
+
+    Cette fonction modifie les coordonnées d'un joueur pour le déplacer vers les coordonnées
+    spécifiées de la cible.
+
+    Args:
+        joueur (Joueur): Le joueur à déplacer.
+        cible_x (int): La coordonnée x de la cible.
+        cible_y (int): La coordonnée y de la cible.
+
+    Returns:
+        None
+    """
     joueur.x = cible_x
     joueur.y = cible_y
     
 def distance_entre(x1, y1, x2, y2):
+    """
+    Calcule la distance entre deux points dans un espace bidimensionnel.
+
+    Cette fonction calcule la distance euclidienne entre deux points spécifiés par leurs coordonnées
+    (x, y) dans un espace bidimensionnel.
+
+    Args:
+        x1 (int): La coordonnée x du premier point.
+        y1 (int): La coordonnée y du premier point.
+        x2 (int): La coordonnée x du deuxième point.
+        y2 (int): La coordonnée y du deuxième point.
+
+    Returns:
+        float: La distance entre les deux points.
+    """
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 

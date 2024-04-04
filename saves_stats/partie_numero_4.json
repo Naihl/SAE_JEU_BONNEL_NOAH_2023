@@ -1,17 +1,17 @@
 {
-    "temps_deb": "04:58:58",
+    "temps_deb": "04:59:52",
     "temps_fin": "partie non completee",
     "nb_deplacement": [
+        52,
         0,
-        0,
-        0,
-        0
+        4,
+        4
     ],
     "degat_subit": [
+        5,
         0,
-        0,
-        0,
-        0
+        5,
+        5
     ],
     "degat_inflige": [
         0,
@@ -28,9 +28,9 @@
     ],
     "nb_morts": [
         0,
-        0,
+        1,
         0,
         0
     ],
-    "nb_tours": 0
+    "nb_tours": 23
 }
