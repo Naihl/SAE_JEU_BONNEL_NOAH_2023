@@ -94,13 +94,14 @@ class stats_game:
             data = {
                 'temps_deb': self.temps_deb,
                 'temps_fin': self.temps_fin,
+                'gagnant': self.gagnant,
+                'nb_tours': self.nb_tours,
                 'nb_deplacement': self.nb_deplacement,
                 'degat_subit': self.degat_subit,
                 'degat_inflige': self.degat_inflige,
-                'gagnant': self.gagnant,
                 'nb_kills': self.nb_kills,
-                'nb_morts': self.nb_morts,
-                'nb_tours': self.nb_tours
+                'nb_morts': self.nb_morts
+                
             }
 
             # Write the game data to a new file
