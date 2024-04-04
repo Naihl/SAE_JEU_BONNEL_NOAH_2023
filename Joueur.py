@@ -150,6 +150,12 @@ class Joueur(Entity):
                 self.inventaire.remove(objet)  # Retirez la botte de l'inventaire
                 print("Vous avez utilisé la botte. Votre mouvement est maintenant de", self.mouvement)
                 return
+            
+    def besoin_cuir(joueur):
+        return joueur.nombre_peau < 3
+
+    def besoin_griffes(joueur):
+        return joueur.nombre_griffes < 2
         
     @property
     def getx(self):

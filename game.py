@@ -9,6 +9,7 @@ Date de création: 2023
 
 """
 
+from turtle import Screen
 import pygame
 import sys
 import pygame_gui
@@ -24,6 +25,9 @@ from Coeur import Coeur
 from Loup import Loup
 from Maraudeur import Maraudeur
 import subprocess
+import math
+import time  # Importer le module time pour la fonction d'attente
+
 
 
 # Initialisation des variables du plateau
@@ -39,6 +43,43 @@ hauteur_main = hauteur_plateau * taille_case + 150
 
 fenetre_main = pygame.display.set_mode((largeur_main + plateau.largeur * plateau.taille_case - 200, hauteur_main ))
 pygame.display.set_caption("King of Sand")
+
+
+def afficher_menu():
+    fenetre_main.fill((87, 80, 66))
+    
+    # Chargement de l'image d'arrière-plan
+    image_arriere_plan = pygame.image.load("img/background15.png").convert()  # Assurez-vous que "arriere_plan.jpg" est le chemin correct vers votre image
+    image_arriere_plan = pygame.transform.scale(image_arriere_plan, (largeur_main + 600, hauteur_main))
+    fenetre_main.blit(image_arriere_plan, (0, 0))
+    
+    font = pygame.font.SysFont('comicsansms', 45)  # Utilisation de la police "Comic Sans MS"
+    text1 = font.render("Choisissez le nombre de joueurs (entre 1 et 4):", True, (0, 0, 0))  # Texte blanc
+    text_rect = text1.get_rect(center=((largeur_main + 300) // 2, 250))  # Centrage du texte horizontalement
+    fenetre_main.blit(text1, text_rect)
+    pygame.display.flip()
+    nb_ia = 3
+    nb_joueurs = 1
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    nb_joueurs = 1
+                elif event.key == pygame.K_2:
+                    nb_joueurs = 2
+                elif event.key == pygame.K_3:
+                    nb_joueurs = 3
+                elif event.key == pygame.K_4:
+                    nb_joueurs = 4
+                elif event.key == pygame.K_RETURN:
+                    return nb_joueurs, 4 - nb_joueurs
+
+        font = pygame.font.SysFont('comicsansms', 40)  # Utilisation de la même police pour le texte
+        pygame.display.flip()
+
 
 def joueurs_adjacents(joueur1, joueur2):
     """
@@ -193,6 +234,7 @@ def position_random(a,b,c,d):
             break
     return x, y
 
+
 # fonction permettant de generer les chèvres aleatoirement
 def generer_chevres(nombre_de_chevres):
     """
@@ -272,7 +314,7 @@ def generer_coeurs(nombre_de_coeurs):
     nombre_de_coeurs = 10  
     for _ in range(nombre_de_coeurs):
         x_coeur, y_coeur = position_random(0, 63, 0, 63)
-        coeur = Coeur(x_coeur, y_coeur)
+        coeur = Coeur(x_coeur, y_coeur, taille_case)
         plateau.placer_objet(coeur, x_coeur, y_coeur)
         coeurs.append(coeur)
     return coeurs
@@ -305,9 +347,174 @@ bottes = generer_bottes(20)
 
 
 
+def faire_tour_ia(joueuractuel):
+    joueur_x, joueur_y = joueuractuel.obtenir_position()
+    loup_cible = None
+    cible_chevre = None
+    cible_joueur = None
+    vie_joueur = joueuractuel.hp
+    distance_min = float('inf')
+
+    
+
+    if vie_joueur <= joueuractuel.hp_max // 2:  # Si le joueur a la moitié ou moins de sa vie
+        for coeur in coeurs:
+            coeur_x, coeur_y = coeur.obtenir_position()
+            distance = abs(joueur_x - coeur_x) + abs(joueur_y - coeur_y)
+            if distance < distance_min:
+                distance_min = distance
+                cible_coeur = coeur
+
+        # Si un coeur a été trouvé, déplacez le joueur vers ce coeur
+        if cible_coeur:
+            coeur_x, coeur_y = cible_coeur.obtenir_position()
+            deplacement_x = 0 if joueur_x == coeur_x else (coeur_x - joueur_x) // abs(coeur_x - joueur_x)
+            deplacement_y = 0 if joueur_y == coeur_y else (coeur_y - joueur_y) // abs(coeur_y - joueur_y)
+            joueuractuel.deplacer(deplacement_x, deplacement_y)
+            joueuractuel.mouvement -= 1
+            if plateau.get_case_content(joueur_x, joueur_y).biome_name == "dirt":
+                joueuractuel.hp -= 5
+            # Mettre à jour la vie du joueur après avoir pris le coeur
+            joueuractuel.hp += 50
+            if joueuractuel.hp > joueuractuel.hp_max:
+                joueuractuel.hp = joueuractuel.hp_max
+            # Supprimer le coeur de la liste des coeurs disponibles
+            coeurs.remove(cible_coeur)
+
+    if joueuractuel.besoin_griffes():
+        for loup in loups:
+            if loup.hp <= 0:
+                continue
+            loup_x, loup_y = loup.obtenir_position()
+            distance = abs(joueur_x - loup_x) + abs(joueur_y - loup_y)
+            if distance < distance_min:
+                distance_min = distance
+                loup_cible = loup
+
+        # Si un loup a été trouvé, déplace le joueur vers ce loup
+        if loup_cible:
+            loup_x, loup_y = loup_cible.obtenir_position()
+            deplacement_x = 0 if joueur_x == loup_x else (loup_x - joueur_x) // abs(loup_x - joueur_x)
+            deplacement_y = 0 if joueur_y == loup_y else (loup_y - joueur_y) // abs(loup_y - joueur_y)
+            joueuractuel.deplacer(deplacement_x, deplacement_y)
+            joueuractuel.mouvement -= 1
+            if plateau.get_case_content(joueur_x, joueur_y).biome_name == "dirt":
+                joueuractuel.hp -= 5
+            if abs(loup_x - joueur_x) + abs(loup_y - joueur_y) <= 1:
+                joueuractuel.attaquer(loup_cible)  # Le joueur attaque le loup s'il est à portée
+    
+    if joueuractuel.besoin_cuir():
+        for chevre in chevres:
+            chevre_x, chevre_y = chevre.obtenir_position()
+            distance = abs(joueur_x - chevre_x) + abs(joueur_y - chevre_y)
+            if distance < distance_min:
+                distance_min = distance
+                cible_chevre = chevre
+
+        # Si une chèvre a été trouvée, déplacez le joueur vers cette chèvre
+        if cible_chevre:
+            chevre_x, chevre_y = cible_chevre.obtenir_position()
+            deplacement_x = 0 if joueur_x == chevre_x else (chevre_x - joueur_x) // abs(chevre_x - joueur_x)
+            deplacement_y = 0 if joueur_y == chevre_y else (chevre_y - joueur_y) // abs(chevre_y - joueur_y)
+            joueuractuel.deplacer(deplacement_x, deplacement_y)
+            joueuractuel.mouvement -= 1
+            if plateau.get_case_content(joueur_x, joueur_y).biome_name == "dirt":
+                joueuractuel.hp -= 5
+            if abs(chevre_x - joueur_x) + abs(chevre_y - joueur_y) <= 1:
+                joueuractuel.attaquer(cible_chevre)  # Le joueur attaque la chèvre s'il est à portée
+        
+    
+    # Si le joueur a tout il va vers la sortie
+    if joueuractuel.besoin_cuir() == False and joueuractuel.besoin_griffes() == False:
+        cible_sortie_x, cible_sortie_y = 31,31
+        joueuractuel.deplacer(cible_sortie_x, cible_sortie_y)
+        joueuractuel.mouvement -= 1
+        if plateau.get_case_content(joueur_x, joueur_y).biome_name == "dirt":
+                joueuractuel.hp -= 5
+        
+    if plateau.get_case_content(joueur_x, joueur_y).biome_name == "temple" and joueuractuel.nombre_peau >= 3 and joueuractuel.nombre_griffes >= 2:
+            pygame.quit()
+            subprocess.run(["python", "victoire.py"])
+
+    if joueur1.hp <= 0:
+        plateau.placer_joueur(joueur1, x1, y1)
+        joueur1.hp = 100
+        joueur1.nombre_peau = 0
+        joueur1.nombre_griffes = 0
+        joueur1.inventaire = []
+        joueuractuel = tour_joueur(joueuractuel)
+
+    if joueur2.hp <= 0:
+        plateau.placer_joueur(joueur2, x2, y2)
+        joueur2.hp = 100
+        joueur2.nombre_peau = 0
+        joueur2.nombre_griffes = 0
+        joueur2.inventaire = []
+        joueuractuel = tour_joueur(joueuractuel)
+
+    if joueur3.hp <= 0:
+        plateau.placer_joueur(joueur3, x3, y3)
+        joueur3.hp = 100
+        joueur3.nombre_peau = 0
+        joueur3.nombre_griffes = 0
+        joueur3.inventaire = []
+        joueuractuel = tour_joueur(joueuractuel)
+
+    if joueur4.hp <= 0:
+        plateau.placer_joueur(joueur4, x4, y4)
+        joueur4.hp = 100
+        joueur4.nombre_peau = 0
+        joueur4.nombre_griffes = 0
+        joueur4.inventaire = []
+        joueuractuel = tour_joueur(joueuractuel)
+
+    # Mettez à jour l'affichage après le déplacement du joueur
+    pygame.display.flip()
+        
+    if joueuractuel.mouvement >0:
+        faire_tour_ia(joueuractuel)
+
+
+
+def trouver_cuir_plus_proche(joueur_x, joueur_y):
+    plus_proche_distance = float('inf')
+    plus_proche_cuir = None
+    for chevre in chevres:
+        chevre_x, chevre_y = chevre.obtenir_position()
+        distance = distance_entre(joueur_x, joueur_y, chevre_x, chevre_y)
+        if distance < plus_proche_distance:
+            plus_proche_distance = distance
+            plus_proche_cuir = chevre
+    return plus_proche_cuir.x, plus_proche_cuir.y
+
+def trouver_griffes_plus_proches(joueur_x, joueur_y):
+    plus_proche_distance = float('inf')
+    plus_proche_griffes = None
+    for loup in loups:
+        loup_x, loup_y = loup.obtenir_position()
+        distance = distance_entre(joueur_x, joueur_y, loup_x, loup_y)
+        if distance < plus_proche_distance:
+            plus_proche_distance = distance
+            plus_proche_griffes = loup
+    return plus_proche_griffes.x, plus_proche_griffes.y
+
+
+
+def deplacer_vers(joueur, cible_x, cible_y):
+    joueur.x = cible_x
+    joueur.y = cible_y
+    
+def distance_entre(x1, y1, x2, y2):
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+
+nb_joueurs, nb_ia = afficher_menu()
+print(nb_joueurs, nb_ia)
+
 
 # Initialisation des joueurs
 joueurs = []  # Création de la liste pour stocker les joueurs
+is_ia = []  # Liste pour stocker si un joueur est une IA ou non
 
 x1, y1 = position_random(0, 15, 0, 15)
 joueur1 = Joueur("Joueur 1", x1, y1, 10, 100, 10, 5)
@@ -316,12 +523,14 @@ positiony_originale_joueur1 = y1
 plateau.placer_joueur(joueur1, x1, y1)
 joueurs.append(joueur1)
 
+
 x2, y2 = position_random(48, 63, 0, 15)
 joueur2 = Joueur("Joueur 2", x2, y2, 10, 100, 10, 5)
 positionx_originale_joueur2 = x2
 positiony_originale_joueur2 = y2
 plateau.placer_joueur(joueur2, x2, y2)
 joueurs.append(joueur2)
+
 
 x3, y3 = position_random(0, 15, 48, 63)
 joueur3 = Joueur("Joueur 3", x3, y3, 10, 100, 10, 5)
@@ -330,6 +539,7 @@ positiony_originale_joueur3 = y3
 plateau.placer_joueur(joueur3, x3, y3)
 joueurs.append(joueur3)
 
+
 x4, y4 = position_random(48, 63, 48, 63)
 joueur4 = Joueur("Joueur 4", x4, y4, 10, 100, 10, 5)
 positionx_originale_joueur4 = x4
@@ -337,6 +547,19 @@ positiony_originale_joueur4 = y4
 plateau.placer_joueur(joueur4, x4, y4)
 joueurs.append(joueur4)
 
+if nb_ia == 1:
+    is_ia.append("Joueur 4")
+elif nb_ia == 2:
+    is_ia.append("Joueur 3")
+    is_ia.append("Joueur 4")
+elif nb_ia == 3:
+    is_ia.append("Joueur 2")
+    is_ia.append("Joueur 3")
+    is_ia.append("Joueur 4")
+else:
+    is_ia = []
+
+print(is_ia)
 
 
 
@@ -380,6 +603,11 @@ while running:
 
         # si le joueur à des mouvements restants
         if joueuractuel.mouvement > 0:
+            
+            if joueuractuel.nom in is_ia:
+            # Si le joueur actuel est une IA, exécutez le code correspondant pour l'IA
+            # Par exemple :
+                faire_tour_ia(joueuractuel)  # Cette fonction doit être définie pour exécuter le tour de l'IA
             
             #mouvement gauche
             if touches[pygame.K_LEFT]:

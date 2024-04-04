@@ -15,7 +15,7 @@ class Coeur(Sprite):
         image (pygame.Surface): L'image représentant l'objet cœur.
         rect (pygame.Rect): Le rectangle de collision de l'objet cœur.
     """
-    def __init__(self, x, y, path = "img/coeur.png"):
+    def __init__(self, x, y, taille_case, path = "img/coeur.png"):
         """
         Initialise un nouvel objet Coeur.
 
@@ -32,4 +32,15 @@ class Coeur(Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.taille_case = taille_case
 
+
+
+    def obtenir_position(self):
+        """
+        Méthode pour obtenir la position du coeur.
+
+        Returns:
+            tuple: Un tuple contenant les coordonnées (x, y) du coeur.
+        """
+        return self.rect.x // self.taille_case, self.rect.y // self.taille_case

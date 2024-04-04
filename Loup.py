@@ -70,7 +70,6 @@ class Loup(Enemy):
         """
         Méthode pour mettre à jour la position du loup à sa mort.
         """
-        self.image.fill((0, 0, 0))
         self.rect.x = -100
         self.rect.y = -100
         self.mort = True

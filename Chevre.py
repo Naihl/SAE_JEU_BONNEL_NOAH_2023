@@ -34,6 +34,8 @@ class Chevre(Enemy):
         super().__init__(nom, x, y, taille_case, hp, damage, mouvement, path)
         self.path = path  # Chargez l'image spécifique pour les chèvres
         self.hp = 150
+        self.x = x
+        self.y = y
         self.damage = 15
         self.mouvement = 2
         self.mort = False
@@ -73,7 +75,6 @@ class Chevre(Enemy):
         """
         Méthode pour mettre à jour la position de la chèvre à sa mort.
         """
-        self.image.fill((0, 0, 0))
         self.rect.x = -100
         self.rect.y = -100
         self.mort = True
