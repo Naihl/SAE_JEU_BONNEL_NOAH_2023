@@ -450,8 +450,7 @@ def faire_tour_ia(joueuractuel):
             deplacement_y = 0 if joueur_y == coeur_y else (coeur_y - joueur_y) // abs(coeur_y - joueur_y)
             joueuractuel.deplacer(deplacement_x, deplacement_y)
             joueuractuel.mouvement -= 1
-            if plateau.get_case_content(joueur_x, joueur_y).biome_name == "dirt":
-                joueuractuel.hp -= 5
+            
             # Mettre à jour la vie du joueur après avoir pris le coeur
             joueuractuel.hp += 50
             if joueuractuel.hp > joueuractuel.hp_max:
