@@ -14,39 +14,31 @@ from Loup import Loup
 from Maraudeur import Maraudeur
 import subprocess
 import socket
+############################################################
+import socket
+import threading
 
-# Définition des informations de connexion au serveur
-SERVER_HOST = '127.0.0.1'  # Adresse IP du serveur
-SERVER_PORT = 5555          # Port utilisé par le serveur
+# Paramètres du serveur
+serveur_ip = "127.0.0.1"
+serveur_port = 5555
 
-# Initialisation du socket client
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((SERVER_HOST, SERVER_PORT))
+# Fonction pour gérer la réception des messages du serveur
+def recevoir_messages(client_socket):
+    while True:
+        try:
+            message = client_socket.recv(1024).decode("utf-8")
+            print(message)
+        except:
+            print("Connexion perdue avec le serveur.")
+            break
 
-# Fonction pour envoyer des données au serveur
-def send_data(data):
-    try:
-        client_socket.send(data.encode())
-    except Exception as e:
-        print(f"Erreur lors de l'envoi de données : {e}")
+# Connexion au serveur
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect((serveur_ip, serveur_port))
 
-# Fonction pour envoyer les données de jeu au serveur
-def send_game_data():
-    # Exemple : envoyer les coordonnées du joueur au serveur
-    player_x, player_y = joueuractuel.obtenir_position()
-    data = f"PLAYER_POSITION {player_x} {player_y}"
-    send_data(data)
+############################################################
 
-# Fonction pour recevoir les données du serveur
-def receive_game_data():
-    try:
-        data = client_socket.recv(1024)
-        if data:
-            # Traitez les données reçues du serveur ici (mise à jour de l'état du jeu, etc.)
-            print(f"Reçu des données du serveur : {data.decode()}")
-    except Exception as e:
-        print(f"Erreur lors de la réception de données : {e}")
-        
+
 #fichier principale du jeu
 
 # Initialisation des variables du plateau
@@ -314,6 +306,24 @@ def tour_joueur(joueuractuel):
         updatetext.render(joueuractuel)
     return joueuractuel
 
+
+############################################################
+
+
+def envoyer_message():
+    while True:
+        message = input("Votre message ('q' pour quitter) : ")
+        if message.lower() == 'q':
+            break
+        client.send(message.encode("utf-8"))
+
+# Lancement du thread pour envoyer des messages au serveur
+thread_envoi_message = threading.Thread(target=envoyer_message)
+thread_envoi_message.start()
+
+############################################################
+
+
 # Boucle principale
 running = True
 while running:
@@ -325,6 +335,12 @@ while running:
             running = False
         touches = pygame.key.get_pressed()
         joueur_x, joueur_y = joueuractuel.obtenir_position()
+        
+        thread_reception = threading.Thread(target=recevoir_messages, args=(client,))
+        thread_reception.start()
+
+
+        
 
         # si le joueur à des mouvements restants
         if joueuractuel.mouvement > 0:
@@ -601,7 +617,7 @@ while running:
             
     
 
-
+    
         
         
 
@@ -610,9 +626,10 @@ while running:
     plateau.afficher_plateau()
 
     
-    
 
     
     pygame.display.flip()
 
 pygame.quit()
+
+thread_envoi_message.join()

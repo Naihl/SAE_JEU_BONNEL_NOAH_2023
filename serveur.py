@@ -21,6 +21,8 @@ mutex = threading.Lock()
 # Fonction pour gérer la connexion avec un client
 def gerer_client(client_socket, joueur):
     global nombre_joueurs_connectes
+    global joueur_actuel
+    joueur_actuel = 0
 
     while True:
         try:
@@ -37,6 +39,12 @@ def gerer_client(client_socket, joueur):
                 for c in clients:
                     if c != client_socket:
                         c.send(f"Joueur {joueur}: {donnees}".encode("utf-8"))
+
+            # Gérer le tour à tour des joueurs
+            if joueur == joueur_actuel:
+                # Envoyer le tour du joueur actuel à ce client
+                client_socket.send("C'est votre tour.".encode("utf-8"))
+                joueur_actuel = (joueur_actuel + 1) % nombre_joueurs_attendus
 
         except:
             # En cas d'erreur, supprimer le client de la liste et fermer la connexion
@@ -67,5 +75,3 @@ while nombre_joueurs_connectes < nombre_joueurs_attendus:
 
 # Fermer le serveur
 serveur.close()
-
-
